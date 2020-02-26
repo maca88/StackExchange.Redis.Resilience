@@ -1,0 +1,45 @@
+﻿projects:
+- filePath: StackExchange.Redis.Resilience\StackExchange.Redis.Resilience.csproj
+  targetFramework: net472
+  concurrentRun: false
+  applyChanges: true
+  analyzation:
+    methodConversion:
+    - conversion: Ignore
+      name: ExecuteAction
+    callForwarding: true
+    cancellationTokens:
+      guards: true
+      methodParameter:
+      - parameter: Optional
+    scanMethodBody: true
+    searchAsyncCounterpartsInInheritedTypes: true
+    scanForMissingAsyncMembers:
+    - all: true
+  transformation:
+    configureAwaitArgument: false
+    localFunctions: true
+  registerPlugin:
+  - type: AsyncGenerator.Core.Plugins.EmptyRegionRemover
+    assemblyName: AsyncGenerator.Core
+- filePath: StackExchange.Redis.Resilience.Tests\StackExchange.Redis.Resilience.Tests.csproj
+  targetFramework: net472
+  concurrentRun: false
+  applyChanges: true
+  analyzation:
+    cancellationTokens:
+      enabled: true
+    exceptionHandling:
+      catchMethodBody:
+      - all: true
+        result: false
+    scanMethodBody: true
+    searchAsyncCounterpartsInInheritedTypes: true
+    scanForMissingAsyncMembers:
+    - all: true
+  registerPlugin:
+  - type: AsyncGenerator.Core.Plugins.NUnitPlugin
+    parameters:
+    - name: createNewTypes
+      value: false
+    assemblyName: AsyncGenerator.Core
