@@ -39,14 +39,20 @@ namespace StackExchange.Redis.Resilience
         public bool IsConnected => _server.Value.IsConnected;
 
         /// <inheritdoc />
+        [Obsolete("Starting with Redis version 5, Redis has moved to 'replica' terminology. Please use IsReplica instead.")]
         public bool IsSlave => _server.Value.IsSlave;
 
+        public bool IsReplica { get; }
+
         /// <inheritdoc />
+        [Obsolete("Starting with Redis version 5, Redis has moved to 'replica' terminology. Please use IsReplica instead.")]
         public bool AllowSlaveWrites
         {
             get => _server.Value.AllowSlaveWrites;
             set => _server.Value.AllowSlaveWrites = value;
         }
+
+        public bool AllowReplicaWrites { get; set; }
 
         /// <inheritdoc />
         public ServerType ServerType => _server.Value.ServerType;
@@ -285,6 +291,12 @@ namespace StackExchange.Redis.Resilience
             return ExecuteAction(() => _server.Value.Keys(database, pattern, pageSize, cursor, pageOffset, flags));
         }
 
+        public IAsyncEnumerable<RedisKey> KeysAsync(int database = -1, RedisValue pattern = new RedisValue(), int pageSize = 250,
+            long cursor = 0, int pageOffset = 0, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _server.Value.KeysAsync(database, pattern, pageSize, cursor, pageOffset, flags));
+        }
+
         /// <inheritdoc />
         public DateTime LastSave(CommandFlags flags = CommandFlags.None)
         {
@@ -301,6 +313,16 @@ namespace StackExchange.Redis.Resilience
         public void MakeMaster(ReplicationChangeOptions options, TextWriter log = null)
         {
             ExecuteAction(() => _server.Value.MakeMaster(options, log));
+        }
+
+        public Role Role(CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _server.Value.Role(flags));
+        }
+
+        public Task<Role> RoleAsync(CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _server.Value.RoleAsync(flags));
         }
 
         /// <inheritdoc />
@@ -387,6 +409,11 @@ namespace StackExchange.Redis.Resilience
             return ExecuteActionAsync(() => _server.Value.ScriptLoadAsync(script, flags));
         }
 
+        public Task<KeyValuePair<string, string>[][]> SentinelReplicasAsync(string serviceName, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _server.Value.SentinelReplicasAsync(serviceName, flags));
+        }
+
         /// <inheritdoc />
         public void SentinelFailover(string serviceName, CommandFlags flags = CommandFlags.None)
         {
@@ -399,6 +426,11 @@ namespace StackExchange.Redis.Resilience
             return ExecuteActionAsync(() => _server.Value.SentinelFailoverAsync(serviceName, flags));
         }
 
+        public string MemoryAllocatorStats(CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _server.Value.MemoryAllocatorStats(flags));
+        }
+
         /// <inheritdoc />
         public EndPoint SentinelGetMasterAddressByName(string serviceName, CommandFlags flags = CommandFlags.None)
         {
@@ -409,6 +441,26 @@ namespace StackExchange.Redis.Resilience
         public Task<EndPoint> SentinelGetMasterAddressByNameAsync(string serviceName, CommandFlags flags = CommandFlags.None)
         {
             return ExecuteActionAsync(() => _server.Value.SentinelGetMasterAddressByNameAsync(serviceName, flags));
+        }
+
+        public EndPoint[] SentinelGetSentinelAddresses(string serviceName, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _server.Value.SentinelGetSentinelAddresses(serviceName, flags));
+        }
+
+        public Task<EndPoint[]> SentinelGetSentinelAddressesAsync(string serviceName, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _server.Value.SentinelGetSentinelAddressesAsync(serviceName, flags));
+        }
+
+        public EndPoint[] SentinelGetReplicaAddresses(string serviceName, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _server.Value.SentinelGetReplicaAddresses(serviceName, flags));
+        }
+
+        public Task<EndPoint[]> SentinelGetReplicaAddressesAsync(string serviceName, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _server.Value.SentinelGetReplicaAddressesAsync(serviceName, flags));
         }
 
         /// <inheritdoc />
@@ -450,12 +502,19 @@ namespace StackExchange.Redis.Resilience
         }
 
         /// <inheritdoc />
+        [Obsolete("Starting with Redis version 5, Redis has moved to 'replica' terminology. Please use IsReplica instead.")]
         public KeyValuePair<string, string>[][] SentinelSlaves(string serviceName, CommandFlags flags = CommandFlags.None)
         {
             return ExecuteAction(() => _server.Value.SentinelSlaves(serviceName, flags));
         }
 
+        public KeyValuePair<string, string>[][] SentinelReplicas(string serviceName, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _server.Value.SentinelReplicas(serviceName, flags));
+        }
+
         /// <inheritdoc />
+        [Obsolete("Starting with Redis version 5, Redis has moved to 'replica' terminology. Please use IsReplica instead.")]
         public Task<KeyValuePair<string, string>[][]> SentinelSlavesAsync(string serviceName, CommandFlags flags = CommandFlags.None)
         {
             return ExecuteActionAsync(() => _server.Value.SentinelSlavesAsync(serviceName, flags));
@@ -468,15 +527,27 @@ namespace StackExchange.Redis.Resilience
         }
 
         /// <inheritdoc />
+        [Obsolete("Starting with Redis version 5, Redis has moved to 'replica' terminology. Please use IsReplica instead.")]
         public void SlaveOf(EndPoint master, CommandFlags flags = CommandFlags.None)
         {
             ExecuteAction(() => _server.Value.SlaveOf(master, flags));
         }
 
+        public void ReplicaOf(EndPoint master, CommandFlags flags = CommandFlags.None)
+        {
+            ExecuteAction(() => _server.Value.ReplicaOf(master, flags));
+        }
+
         /// <inheritdoc />
+        [Obsolete("Starting with Redis version 5, Redis has moved to 'replica' terminology. Please use IsReplica instead.")]
         public Task SlaveOfAsync(EndPoint master, CommandFlags flags = CommandFlags.None)
         {
             return ExecuteActionAsync(() => _server.Value.SlaveOfAsync(master, flags));
+        }
+
+        public Task ReplicaOfAsync(EndPoint master, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _server.Value.ReplicaOfAsync(master, flags));
         }
 
         /// <inheritdoc />
@@ -561,6 +632,81 @@ namespace StackExchange.Redis.Resilience
         public Task<DateTime> TimeAsync(CommandFlags flags = CommandFlags.None)
         {
             return ExecuteActionAsync(() => _server.Value.TimeAsync(flags));
+        }
+
+        public Task<string> LatencyDoctorAsync(CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _server.Value.LatencyDoctorAsync(flags));
+        }
+
+        public string LatencyDoctor(CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _server.Value.LatencyDoctor(flags));
+        }
+
+        public Task<long> LatencyResetAsync(string[] eventNames = null, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _server.Value.LatencyResetAsync(eventNames, flags));
+        }
+
+        public long LatencyReset(string[] eventNames = null, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _server.Value.LatencyReset(eventNames, flags));
+        }
+
+        public Task<LatencyHistoryEntry[]> LatencyHistoryAsync(string eventName, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _server.Value.LatencyHistoryAsync(eventName, flags));
+        }
+
+        public LatencyHistoryEntry[] LatencyHistory(string eventName, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _server.Value.LatencyHistory(eventName, flags));
+        }
+
+        public Task<LatencyLatestEntry[]> LatencyLatestAsync(CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _server.Value.LatencyLatestAsync(flags));
+        }
+
+        public LatencyLatestEntry[] LatencyLatest(CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _server.Value.LatencyLatest(flags));
+        }
+
+        public Task<string> MemoryDoctorAsync(CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _server.Value.MemoryDoctorAsync(flags));
+        }
+
+        public string MemoryDoctor(CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _server.Value.MemoryDoctor(flags));
+        }
+
+        public Task MemoryPurgeAsync(CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _server.Value.MemoryPurgeAsync(flags));
+        }
+
+        public void MemoryPurge(CommandFlags flags = CommandFlags.None)
+        {
+            ExecuteAction(() => _server.Value.MemoryPurge(flags));
+        }
+
+        public Task<RedisResult> MemoryStatsAsync(CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _server.Value.MemoryStatsAsync(flags));
+        }
+
+        public RedisResult MemoryStats(CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _server.Value.MemoryStats(flags));
+        }
+
+        public Task<string> MemoryAllocatorStatsAsync(CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _server.Value.MemoryAllocatorStatsAsync(flags));
         }
 
         /// <inheritdoc />

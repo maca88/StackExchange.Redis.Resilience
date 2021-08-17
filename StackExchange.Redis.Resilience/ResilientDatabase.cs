@@ -23,6 +23,11 @@ namespace StackExchange.Redis.Resilience
 
         #region IDatabase implementation
 
+        public long KeyTouch(RedisKey[] keys, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _database.Value.KeyTouch(keys, flags));
+        }
+
         /// <inheritdoc />
         public int Database => _database.Value.Database;
 
@@ -366,6 +371,12 @@ namespace StackExchange.Redis.Resilience
             return ExecuteActionAsync(() => _database.Value.HashLengthAsync(key, flags));
         }
 
+        public IAsyncEnumerable<HashEntry> HashScanAsync(RedisKey key, RedisValue pattern = new RedisValue(), int pageSize = 250, long cursor = 0,
+            int pageOffset = 0, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _database.Value.HashScanAsync(key, pattern, pageSize, cursor));
+        }
+
         /// <inheritdoc />
         public IEnumerable<HashEntry> HashScan(RedisKey key, RedisValue pattern, int pageSize, CommandFlags flags)
         {
@@ -390,6 +401,11 @@ namespace StackExchange.Redis.Resilience
             return ExecuteAction(() => _database.Value.HashSet(key, hashField, value, when, flags));
         }
 
+        public long HashStringLength(RedisKey key, RedisValue hashField, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _database.Value.HashStringLength(key, hashField, flags));
+        }
+
         /// <inheritdoc />
         public Task HashSetAsync(RedisKey key, HashEntry[] hashFields, CommandFlags flags = CommandFlags.None)
         {
@@ -400,6 +416,11 @@ namespace StackExchange.Redis.Resilience
         public Task<bool> HashSetAsync(RedisKey key, RedisValue hashField, RedisValue value, When when = When.Always, CommandFlags flags = CommandFlags.None)
         {
             return ExecuteActionAsync(() => _database.Value.HashSetAsync(key, hashField, value, when, flags));
+        }
+
+        public Task<long> HashStringLengthAsync(RedisKey key, RedisValue hashField, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _database.Value.HashStringLengthAsync(key, hashField, flags));
         }
 
         /// <inheritdoc />
@@ -750,6 +771,11 @@ namespace StackExchange.Redis.Resilience
             return ExecuteAction(() => _database.Value.ListLeftPush(key, value, when, flags));
         }
 
+        public long ListLeftPush(RedisKey key, RedisValue[] values, When when = When.Always, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _database.Value.ListLeftPush(key, values, when, flags));
+        }
+
         /// <inheritdoc />
         public long ListLeftPush(RedisKey key, RedisValue[] values, CommandFlags flags = CommandFlags.None)
         {
@@ -760,6 +786,11 @@ namespace StackExchange.Redis.Resilience
         public Task<long> ListLeftPushAsync(RedisKey key, RedisValue value, When when = When.Always, CommandFlags flags = CommandFlags.None)
         {
             return ExecuteActionAsync(() => _database.Value.ListLeftPushAsync(key, value, when, flags));
+        }
+
+        public Task<long> ListLeftPushAsync(RedisKey key, RedisValue[] values, When when = When.Always, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _database.Value.ListLeftPushAsync(key, values, when, flags));
         }
 
         /// <inheritdoc />
@@ -834,6 +865,11 @@ namespace StackExchange.Redis.Resilience
             return ExecuteAction(() => _database.Value.ListRightPush(key, value, when, flags));
         }
 
+        public long ListRightPush(RedisKey key, RedisValue[] values, When when = When.Always, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _database.Value.ListRightPush(key, values, when, flags));
+        }
+
         /// <inheritdoc />
         public long ListRightPush(RedisKey key, RedisValue[] values, CommandFlags flags = CommandFlags.None)
         {
@@ -844,6 +880,11 @@ namespace StackExchange.Redis.Resilience
         public Task<long> ListRightPushAsync(RedisKey key, RedisValue value, When when = When.Always, CommandFlags flags = CommandFlags.None)
         {
             return ExecuteActionAsync(() => _database.Value.ListRightPushAsync(key, value, when, flags));
+        }
+
+        public Task<long> ListRightPushAsync(RedisKey key, RedisValue[] values, When when = When.Always, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _database.Value.ListRightPushAsync(key, values, when, flags));
         }
 
         /// <inheritdoc />
@@ -1488,6 +1529,18 @@ namespace StackExchange.Redis.Resilience
             return ExecuteActionAsync(() => _database.Value.SortedSetRemoveRangeByValueAsync(key, min, max, exclude, flags));
         }
 
+        public IAsyncEnumerable<RedisValue> SetScanAsync(RedisKey key, RedisValue pattern = new RedisValue(), int pageSize = 250, long cursor = 0,
+            int pageOffset = 0, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _database.Value.SetScanAsync(key, pattern, pageSize, cursor));
+        }
+
+        public IAsyncEnumerable<SortedSetEntry> SortedSetScanAsync(RedisKey key, RedisValue pattern = new RedisValue(), int pageSize = 250,
+            long cursor = 0, int pageOffset = 0, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _database.Value.SortedSetScanAsync(key, pattern, pageSize, cursor, pageOffset, flags));
+        }
+
         /// <inheritdoc />
         public IEnumerable<SortedSetEntry> SortedSetScan(RedisKey key, RedisValue pattern, int pageSize, CommandFlags flags)
         {
@@ -1506,10 +1559,30 @@ namespace StackExchange.Redis.Resilience
             return ExecuteAction(() => _database.Value.SortedSetScore(key, member, flags));
         }
 
+        public SortedSetEntry? SortedSetPop(RedisKey key, Order order = Order.Ascending, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _database.Value.SortedSetPop(key, order, flags));
+        }
+
+        public SortedSetEntry[] SortedSetPop(RedisKey key, long count, Order order = Order.Ascending, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _database.Value.SortedSetPop(key, count, order, flags));
+        }
+
         /// <inheritdoc />
         public Task<double?> SortedSetScoreAsync(RedisKey key, RedisValue member, CommandFlags flags = CommandFlags.None)
         {
             return ExecuteActionAsync(() => _database.Value.SortedSetScoreAsync(key, member, flags));
+        }
+
+        public Task<SortedSetEntry?> SortedSetPopAsync(RedisKey key, Order order = Order.Ascending, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _database.Value.SortedSetPopAsync(key, order, flags));
+        }
+
+        public Task<SortedSetEntry[]> SortedSetPopAsync(RedisKey key, long count, Order order = Order.Ascending, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _database.Value.SortedSetPopAsync(key, count, order, flags));
         }
 
         /// <inheritdoc />
@@ -1614,10 +1687,22 @@ namespace StackExchange.Redis.Resilience
             return ExecuteAction(() => _database.Value.StreamCreateConsumerGroup(key, groupName, position, flags));
         }
 
+        public bool StreamCreateConsumerGroup(RedisKey key, RedisValue groupName, RedisValue? position = null,
+            bool createStream = true, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _database.Value.StreamCreateConsumerGroup(key, groupName, position, createStream, flags));
+        }
+
         /// <inheritdoc />
         public Task<bool> StreamCreateConsumerGroupAsync(RedisKey key, RedisValue groupName, RedisValue? position = null, CommandFlags flags = CommandFlags.None)
         {
             return ExecuteActionAsync(() => _database.Value.StreamCreateConsumerGroupAsync(key, groupName, position, flags));
+        }
+
+        public Task<bool> StreamCreateConsumerGroupAsync(RedisKey key, RedisValue groupName, RedisValue? position = null,
+            bool createStream = true, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _database.Value.StreamCreateConsumerGroupAsync(key, groupName, position, createStream, flags));
         }
 
         /// <inheritdoc />
@@ -1758,10 +1843,22 @@ namespace StackExchange.Redis.Resilience
             return ExecuteAction(() => _database.Value.StreamReadGroup(key, groupName, consumerName, position, count, flags));
         }
 
+        public StreamEntry[] StreamReadGroup(RedisKey key, RedisValue groupName, RedisValue consumerName, RedisValue? position = null,
+            int? count = null, bool noAck = false, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _database.Value.StreamReadGroup(key, groupName, consumerName, position, count, noAck, flags));
+        }
+
         /// <inheritdoc />
         public RedisStream[] StreamReadGroup(StreamPosition[] streamPositions, RedisValue groupName, RedisValue consumerName, int? countPerStream = null, CommandFlags flags = CommandFlags.None)
         {
             return ExecuteAction(() => _database.Value.StreamReadGroup(streamPositions, groupName, consumerName, countPerStream, flags));
+        }
+
+        public RedisStream[] StreamReadGroup(StreamPosition[] streamPositions, RedisValue groupName, RedisValue consumerName,
+            int? countPerStream = null, bool noAck = false, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _database.Value.StreamReadGroup(streamPositions, groupName, consumerName, countPerStream, noAck, flags));
         }
 
         /// <inheritdoc />
@@ -1770,10 +1867,22 @@ namespace StackExchange.Redis.Resilience
             return ExecuteActionAsync(() => _database.Value.StreamReadGroupAsync(key, groupName, consumerName, position, count, flags));
         }
 
+        public Task<StreamEntry[]> StreamReadGroupAsync(RedisKey key, RedisValue groupName, RedisValue consumerName, RedisValue? position = null,
+            int? count = null, bool noAck = false, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _database.Value.StreamReadGroupAsync(key, groupName, consumerName, position, count, noAck, flags));
+        }
+
         /// <inheritdoc />
         public Task<RedisStream[]> StreamReadGroupAsync(StreamPosition[] streamPositions, RedisValue groupName, RedisValue consumerName, int? countPerStream = null, CommandFlags flags = CommandFlags.None)
         {
             return ExecuteActionAsync(() => _database.Value.StreamReadGroupAsync(streamPositions, groupName, consumerName, countPerStream, flags));
+        }
+
+        public Task<RedisStream[]> StreamReadGroupAsync(StreamPosition[] streamPositions, RedisValue groupName, RedisValue consumerName,
+            int? countPerStream = null, bool noAck = false, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _database.Value.StreamReadGroupAsync(streamPositions, groupName, consumerName, countPerStream, noAck, flags));
         }
 
         /// <inheritdoc />
@@ -2034,10 +2143,25 @@ namespace StackExchange.Redis.Resilience
             return ExecuteAction(() => _database.Value.StringSetRange(key, offset, value, flags));
         }
 
+        public bool KeyTouch(RedisKey key, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _database.Value.KeyTouch(key, flags));
+        }
+
         /// <inheritdoc />
         public Task<RedisValue> StringSetRangeAsync(RedisKey key, long offset, RedisValue value, CommandFlags flags = CommandFlags.None)
         {
             return ExecuteActionAsync(() => _database.Value.StringSetRangeAsync(key, offset, value, flags));
+        }
+
+        public Task<bool> KeyTouchAsync(RedisKey key, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _database.Value.KeyTouchAsync(key, flags));
+        }
+
+        public Task<long> KeyTouchAsync(RedisKey[] keys, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _database.Value.KeyTouchAsync(keys, flags));
         }
 
         /// <inheritdoc />
