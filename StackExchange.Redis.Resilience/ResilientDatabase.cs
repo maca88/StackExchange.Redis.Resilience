@@ -374,7 +374,7 @@ namespace StackExchange.Redis.Resilience
         public IAsyncEnumerable<HashEntry> HashScanAsync(RedisKey key, RedisValue pattern = new RedisValue(), int pageSize = 250, long cursor = 0,
             int pageOffset = 0, CommandFlags flags = CommandFlags.None)
         {
-            return ExecuteAction(() => _database.Value.HashScanAsync(key, pattern, pageSize, cursor));
+            return ExecuteAction(() => _database.Value.HashScanAsync(key, pattern, pageSize, cursor, pageOffset, flags));
         }
 
         /// <inheritdoc />
@@ -1532,7 +1532,7 @@ namespace StackExchange.Redis.Resilience
         public IAsyncEnumerable<RedisValue> SetScanAsync(RedisKey key, RedisValue pattern = new RedisValue(), int pageSize = 250, long cursor = 0,
             int pageOffset = 0, CommandFlags flags = CommandFlags.None)
         {
-            return ExecuteAction(() => _database.Value.SetScanAsync(key, pattern, pageSize, cursor));
+            return ExecuteAction(() => _database.Value.SetScanAsync(key, pattern, pageSize, cursor, pageOffset, flags));
         }
 
         public IAsyncEnumerable<SortedSetEntry> SortedSetScanAsync(RedisKey key, RedisValue pattern = new RedisValue(), int pageSize = 250,

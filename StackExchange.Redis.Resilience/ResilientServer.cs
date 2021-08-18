@@ -42,7 +42,10 @@ namespace StackExchange.Redis.Resilience
         [Obsolete("Starting with Redis version 5, Redis has moved to 'replica' terminology. Please use IsReplica instead.")]
         public bool IsSlave => _server.Value.IsSlave;
 
-        public bool IsReplica { get; }
+        public bool IsReplica
+        {
+            get => _server.Value.IsReplica;
+        }
 
         /// <inheritdoc />
         [Obsolete("Starting with Redis version 5, Redis has moved to 'replica' terminology. Please use IsReplica instead.")]
@@ -52,7 +55,11 @@ namespace StackExchange.Redis.Resilience
             set => _server.Value.AllowSlaveWrites = value;
         }
 
-        public bool AllowReplicaWrites { get; set; }
+        public bool AllowReplicaWrites
+        {
+            get => _server.Value.AllowReplicaWrites;
+            set => _server.Value.AllowReplicaWrites = value;
+        }
 
         /// <inheritdoc />
         public ServerType ServerType => _server.Value.ServerType;
