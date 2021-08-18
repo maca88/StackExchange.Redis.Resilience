@@ -7,7 +7,7 @@
     <Authors>maca88</Authors>
     <Company />
     <Description>Provides a solution to force reconnect when StackExchange.Redis fails to reconnect after a connection blip.</Description>
-    <TargetFrameworks>net472;net461;netstandard2.0;net462</TargetFrameworks>
+    <TargetFrameworks>net461;netstandard2.0;net472;netcoreapp3.1;net5.0</TargetFrameworks>
     <ImplicitlyExpandNETStandardFacades>false</ImplicitlyExpandNETStandardFacades>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
