@@ -760,9 +760,21 @@ namespace StackExchange.Redis.Resilience
         }
 
         /// <inheritdoc />
+        public RedisValue[] ListLeftPop(RedisKey key, long count, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _database.Value.ListLeftPop(key, count, flags));
+        }
+
+        /// <inheritdoc />
         public Task<RedisValue> ListLeftPopAsync(RedisKey key, CommandFlags flags = CommandFlags.None)
         {
             return ExecuteActionAsync(() => _database.Value.ListLeftPopAsync(key, flags));
+        }
+
+        /// <inheritdoc />
+        public Task<RedisValue[]> ListLeftPopAsync(RedisKey key, long count, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _database.Value.ListLeftPopAsync(key, count, flags));
         }
 
         /// <inheritdoc />
@@ -841,10 +853,20 @@ namespace StackExchange.Redis.Resilience
             return ExecuteAction(() => _database.Value.ListRightPop(key, flags));
         }
 
+        public RedisValue[] ListRightPop(RedisKey key, long count, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _database.Value.ListRightPop(key, count, flags));
+        }
+
         /// <inheritdoc />
         public Task<RedisValue> ListRightPopAsync(RedisKey key, CommandFlags flags = CommandFlags.None)
         {
             return ExecuteActionAsync(() => _database.Value.ListRightPopAsync(key, flags));
+        }
+
+        public Task<RedisValue[]> ListRightPopAsync(RedisKey key, long count, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _database.Value.ListRightPopAsync(key, count, flags));
         }
 
         /// <inheritdoc />
@@ -2003,6 +2025,18 @@ namespace StackExchange.Redis.Resilience
         public Task<RedisValue[]> StringGetAsync(RedisKey[] keys, CommandFlags flags = CommandFlags.None)
         {
             return ExecuteActionAsync(() => _database.Value.StringGetAsync(keys, flags));
+        }
+
+        /// <inheritdoc />
+        public RedisValue StringGetDelete(RedisKey key, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteAction(() => _database.Value.StringGetDelete(key, flags));
+        }
+
+        /// <inheritdoc />
+        public Task<RedisValue> StringGetDeleteAsync(RedisKey key, CommandFlags flags = CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _database.Value.StringGetDeleteAsync(key, flags));
         }
 
         /// <inheritdoc />
