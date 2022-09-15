@@ -15,10 +15,8 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using StackExchange.Redis;
-using StackExchange.Redis.Resilience;
 
-namespace Tests
+namespace StackExchange.Redis.Resilience.Tests
 {
     public partial class ResilientConnectionMultiplexerFixture
     {
@@ -34,7 +32,7 @@ namespace Tests
             using var mux = CreateMultiplexer();
             var taskCount = 6;
             var taskValues = new List<KeyValuePair<TaskCompletionSource<int>, int>>();
-            var tasks = CreateTaskList(taskValues, taskCount); // In order to avoid collection was modified exception 
+            var tasks = CreateTaskList(taskValues, taskCount); // In order to avoid collection was modified exception
             var syncHandlers = CreateSyncSubscriptionHandlers(taskValues, 0, 2);
             var asyncHandlers = CreateAsyncSubscriptionHandlers(taskValues, 2, 2);
             var handlers = CreateSubscriptionHandlers(taskValues, 4, 2);
@@ -180,14 +178,14 @@ namespace Tests
         }
 
         [Test]
-        public async Task ReconnectServerByFaliureAsync()
+        public async Task ReconnectServerByFailureAsync()
         {
             using var mux = CreateMultiplexer();
             var server = mux.GetServer(mux.GetEndPoints()[0]);
             await (server.DatabaseSizeAsync());
 
             // Simulate RedisConnectionException
-            mux.ConnectionMultiplexer.Dispose();
+            await (mux.ConnectionMultiplexer.DisposeAsync());
             ResetDisposeField(mux.ConnectionMultiplexer);
 
             Assert.ThrowsAsync<RedisConnectionException>(() => server.DatabaseSizeAsync()); // set first error
@@ -199,7 +197,7 @@ namespace Tests
         }
 
         [Test]
-        public async Task ReconnectDatabaseByFaliureAsync()
+        public async Task ReconnectDatabaseByFailureAsync()
         {
             using var mux = CreateMultiplexer();
             var db = mux.GetDatabase();
@@ -207,7 +205,7 @@ namespace Tests
             await (db.StringGetAsync(key));
 
             // Simulate RedisConnectionException
-            mux.ConnectionMultiplexer.Dispose();
+            await (mux.ConnectionMultiplexer.DisposeAsync());
             ResetDisposeField(mux.ConnectionMultiplexer);
 
             Assert.ThrowsAsync<RedisConnectionException>(() => db.StringGetAsync(key)); // set first error
@@ -219,7 +217,7 @@ namespace Tests
         }
 
         [Test]
-        public async Task ReconnectSubscriberByFaliureAsync()
+        public async Task ReconnectSubscriberByFailureAsync()
         {
             using var mux = CreateMultiplexer();
             var subscriber = mux.GetSubscriber();
@@ -227,7 +225,7 @@ namespace Tests
             await (subscriber.PublishAsync(channel, true));
 
             // Simulate RedisConnectionException
-            mux.ConnectionMultiplexer.Dispose();
+            await (mux.ConnectionMultiplexer.DisposeAsync());
             ResetDisposeField(mux.ConnectionMultiplexer);
 
             Assert.ThrowsAsync<RedisConnectionException>(() => subscriber.PublishAsync(channel, true)); // set first error

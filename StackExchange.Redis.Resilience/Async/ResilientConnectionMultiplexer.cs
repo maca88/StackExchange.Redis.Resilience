@@ -71,8 +71,8 @@ namespace StackExchange.Redis.Resilience
                     var elapsedSinceFirstError = utcNow - _firstErrorDate;
                     var elapsedSinceMostRecentError = utcNow - _previousErrorDate;
                     var shouldReconnect =
-                    elapsedSinceFirstError >= _reconnectErrorThreshold // make sure we gave the multiplexer enough time to reconnect on its own if it can
-                    && elapsedSinceMostRecentError <= _reconnectErrorThreshold; //make sure we aren't working on stale data (e.g. if there was a gap in errors, don't reconnect yet).
+                        elapsedSinceFirstError >= _reconnectErrorThreshold // make sure we gave the multiplexer enough time to reconnect on its own if it can
+                        && elapsedSinceMostRecentError <= _reconnectErrorThreshold; //make sure we aren't working on stale data (e.g. if there was a gap in errors, don't reconnect yet).
 
                     // Update the previousError timestamp to be now (e.g. this reconnect request)
                     _previousErrorDate = utcNow;
@@ -104,16 +104,22 @@ namespace StackExchange.Redis.Resilience
             }
         }
 
-        private async Task SetupMultiplexerAsync(ConnectionMultiplexer newMultiplexer, ConnectionMultiplexer oldMultiplexer, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task SetupMultiplexerAsync(IConnectionMultiplexer newMultiplexer, IConnectionMultiplexer oldMultiplexer, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             _connectionMultiplexer = newMultiplexer;
             CloseMultiplexer(oldMultiplexer);
 
             // Copy properties that have a setter
+#pragma warning disable CS0618
             _connectionMultiplexer.IncludeDetailInExceptions = oldMultiplexer.IncludeDetailInExceptions;
             _connectionMultiplexer.StormLogThreshold = oldMultiplexer.StormLogThreshold;
-            _connectionMultiplexer.IncludePerformanceCountersInExceptions = oldMultiplexer.IncludePerformanceCountersInExceptions;
+            if (_connectionMultiplexer is ConnectionMultiplexer connectionMultiplexer && oldMultiplexer is ConnectionMultiplexer oldConnectionMultiplexer)
+            {
+                connectionMultiplexer.IncludePerformanceCountersInExceptions = oldConnectionMultiplexer.IncludePerformanceCountersInExceptions;
+            }
+#pragma warning restore CS0618
+
             if (_profilingSessionProvider != null)
             {
                 _connectionMultiplexer.RegisterProfiler(_profilingSessionProvider);
