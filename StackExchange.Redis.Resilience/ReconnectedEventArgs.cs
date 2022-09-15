@@ -12,7 +12,7 @@ namespace StackExchange.Redis.Resilience
         /// </summary>
         /// <param name="newMultiplexer">The new connection multiplexer.</param>
         /// <param name="oldMultiplexer">The old connection multiplexer.</param>
-        public ReconnectedEventArgs(ConnectionMultiplexer newMultiplexer, ConnectionMultiplexer oldMultiplexer)
+        public ReconnectedEventArgs(IConnectionMultiplexer newMultiplexer, IConnectionMultiplexer oldMultiplexer)
         {
             NewConnectionMultiplexer = newMultiplexer;
             OldConnectionMultiplexer = oldMultiplexer;
@@ -21,11 +21,11 @@ namespace StackExchange.Redis.Resilience
         /// <summary>
         /// The new connection multiplexer.
         /// </summary>
-        public ConnectionMultiplexer NewConnectionMultiplexer { get; }
+        public IConnectionMultiplexer NewConnectionMultiplexer { get; }
 
         /// <summary>
         /// The old connection multiplexer.
         /// </summary>
-        public ConnectionMultiplexer OldConnectionMultiplexer { get; }
+        public IConnectionMultiplexer OldConnectionMultiplexer { get; }
     }
 }

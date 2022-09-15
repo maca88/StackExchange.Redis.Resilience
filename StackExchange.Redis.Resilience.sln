@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Redis.Resilie
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Redis.Resilience.Tests", "StackExchange.Redis.Resilience.Tests\StackExchange.Redis.Resilience.Tests.csproj", "{58937C69-9913-4E5B-B1B5-6B9A6BD52126}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Redis.Resilience.SourceGenerator", "StackExchange.Redis.Resilience.SourceGenerator\StackExchange.Redis.Resilience.SourceGenerator.csproj", "{B168332E-8193-4646-9E2B-8DC1C3AB055E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{58937C69-9913-4E5B-B1B5-6B9A6BD52126}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{58937C69-9913-4E5B-B1B5-6B9A6BD52126}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{58937C69-9913-4E5B-B1B5-6B9A6BD52126}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B168332E-8193-4646-9E2B-8DC1C3AB055E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B168332E-8193-4646-9E2B-8DC1C3AB055E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B168332E-8193-4646-9E2B-8DC1C3AB055E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B168332E-8193-4646-9E2B-8DC1C3AB055E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,5 +1,3 @@
-#tool nuget:?package=NUnit.ConsoleRunner&version=3.10.0
-#tool nuget:?package=CSharpAsyncGenerator.CommandLine&version=0.17.1
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 //////////////////////////////////////////////////////////////////////
@@ -30,7 +28,7 @@ var buildDirs = new List<string>()
 // TASKS
 //////////////////////////////////////////////////////////////////////
 
-Task("Clean")
+Task("clean")
     .Does(() =>
 {
     foreach(var buildDir in buildDirs)
@@ -39,72 +37,70 @@ Task("Clean")
     }
 });
 
-Task("Restore")
-    .IsDependentOn("Clean")
+Task("restore")
+    .IsDependentOn("clean")
     .Does(() =>
 {
-    NuGetRestore("./StackExchange.Redis.Resilience.sln");
+    DotNetRestore("./StackExchange.Redis.Resilience.sln");
 });
 
-Task("RestoreCore")
-    .IsDependentOn("Clean")
+Task("build")
+    .IsDependentOn("restore")
     .Does(() =>
 {
-    DotNetCoreRestore("./StackExchange.Redis.Resilience.sln");
-});
-
-Task("Build")
-    .IsDependentOn("Restore")
-    .Does(() =>
-{
-    MSBuild("./StackExchange.Redis.Resilience.sln", settings =>
-        settings.SetConfiguration(configuration));
-});
-
-Task("BuildCore")
-    .IsDependentOn("RestoreCore")
-    .Does(() =>
-{
-    DotNetCoreBuild("./StackExchange.Redis.Resilience.sln", new DotNetCoreBuildSettings
+    DotNetBuild("./StackExchange.Redis.Resilience.sln", new DotNetCoreBuildSettings
     {
         Configuration = configuration,
         ArgumentCustomization = args => args.Append("--no-restore"),
     });
 });
 
-Task("Test")
-    .IsDependentOn("Build")
+Task("build-source-generator")
     .Does(() =>
 {
-    NUnit3("./StackExchange.Redis.Resilience.Tests/bin/" + configuration + $"/{netfx}/*.Tests.dll", new NUnit3Settings
+    DotNetBuild("./StackExchange.Redis.Resilience.SourceGenerator/StackExchange.Redis.Resilience.SourceGenerator.csproj", new DotNetCoreBuildSettings
     {
-        NoResults = true
+        Configuration = "Release"
     });
 });
 
-Task("TestCore")
-    .IsDependentOn("BuildCore")
+Task("test")
+    .IsDependentOn("build")
     .Does(() =>
 {
-    DotNetCoreTest("./StackExchange.Redis.Resilience.Tests/StackExchange.Redis.Resilience.Tests.csproj", new DotNetCoreTestSettings
+    DotNetTest("./StackExchange.Redis.Resilience.Tests/StackExchange.Redis.Resilience.Tests.csproj", new DotNetCoreTestSettings
     {
         Configuration = configuration,
         NoBuild = true
     });
 });
 
+Task("generate-async")
+    .IsDependentOn("restore")
+    .Does(() =>
+{
+    DotNetTool("async-generator");
+});
+
+Task("generate-source")
+    .IsDependentOn("build-source-generator")
+    .Does(() =>
+{
+    DotNetExecute("./StackExchange.Redis.Resilience.SourceGenerator/bin/Release/net6.0/StackExchange.Redis.Resilience.SourceGenerator.dll");
+});
+
 //////////////////////////////////////////////////////////////////////
 // PACKAGE
 //////////////////////////////////////////////////////////////////////
 
-Task("CleanPackages")
+Task("cleanPackages")
     .Does(() =>
 {
     CleanDirectory(PACKAGE_DIR);
 });
 
-Task("Pack")
-    .IsDependentOn("CleanPackages")
+Task("pack")
+    .IsDependentOn("cleanPackages")
     .Description("Creates NuGet packages")
     .Does(() =>
 {
@@ -126,20 +122,13 @@ Task("Pack")
     }
 });
 
-Task("Async")
-    .IsDependentOn("Restore")
-    .Does(() =>
-{
-    DotNetCoreExecute("./Tools/CSharpAsyncGenerator.CommandLine.0.17.1/tools/netcoreapp2.1/AsyncGenerator.CommandLine.dll");
-});
-    
-Task("Publish")
-    .IsDependentOn("Pack")
+Task("publish")
+    .IsDependentOn("pack")
     .Does(() =>
 {
     foreach(var package in System.IO.Directory.GetFiles(PACKAGE_DIR, "*.nupkg").Where(o => !o.Contains("symbols")))
     {
-        NuGetPush(package, new NuGetPushSettings()
+        DotNetNuGetPush(package, new DotNetNuGetPushSettings()
         {
             Source = "https://api.nuget.org/v3/index.json"
         });

@@ -5,10 +5,8 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using StackExchange.Redis;
-using StackExchange.Redis.Resilience;
 
-namespace Tests
+namespace StackExchange.Redis.Resilience.Tests
 {
     [TestFixture]
     public partial class ResilientConnectionMultiplexerFixture
@@ -26,7 +24,7 @@ namespace Tests
             using var mux = CreateMultiplexer();
             var taskCount = 6;
             var taskValues = new List<KeyValuePair<TaskCompletionSource<int>, int>>();
-            var tasks = CreateTaskList(taskValues, taskCount); // In order to avoid collection was modified exception 
+            var tasks = CreateTaskList(taskValues, taskCount); // In order to avoid collection was modified exception
             var syncHandlers = CreateSyncSubscriptionHandlers(taskValues, 0, 2);
             var asyncHandlers = CreateAsyncSubscriptionHandlers(taskValues, 2, 2);
             var handlers = CreateSubscriptionHandlers(taskValues, 4, 2);
@@ -171,7 +169,7 @@ namespace Tests
         }
 
         [Test]
-        public void ReconnectServerByFaliure()
+        public void ReconnectServerByFailure()
         {
             using var mux = CreateMultiplexer();
             var server = mux.GetServer(mux.GetEndPoints()[0]);
@@ -190,7 +188,7 @@ namespace Tests
         }
 
         [Test]
-        public void ReconnectDatabaseByFaliure()
+        public void ReconnectDatabaseByFailure()
         {
             using var mux = CreateMultiplexer();
             var db = mux.GetDatabase();
@@ -210,7 +208,7 @@ namespace Tests
         }
 
         [Test]
-        public void ReconnectSubscriberByFaliure()
+        public void ReconnectSubscriberByFailure()
         {
             using var mux = CreateMultiplexer();
             var subscriber = mux.GetSubscriber();

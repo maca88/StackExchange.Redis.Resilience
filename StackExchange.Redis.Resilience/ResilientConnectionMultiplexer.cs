@@ -23,8 +23,8 @@ namespace StackExchange.Redis.Resilience
     public partial class ResilientConnectionMultiplexer : IResilientConnectionMultiplexer
     {
         private readonly SemaphoreSlim _reconnectLock = new SemaphoreSlim(1, 1);
-        private readonly Func<ConnectionMultiplexer> _connectionMultiplexerFactory;
-        private readonly Func<Task<ConnectionMultiplexer>> _connectionMultiplexerAsyncFactory;
+        private readonly Func<IConnectionMultiplexer> _connectionMultiplexerFactory;
+        private readonly Func<Task<IConnectionMultiplexer>> _connectionMultiplexerAsyncFactory;
         private readonly object _eventHandlerLock = new object();
         private readonly TimeSpan _reconnectMinFrequency;
         private readonly TimeSpan _reconnectErrorThreshold;
@@ -44,7 +44,7 @@ namespace StackExchange.Redis.Resilience
         // Profiling session provider
         private Func<ProfilingSession> _profilingSessionProvider;
 
-        private ConnectionMultiplexer _connectionMultiplexer;
+        private IConnectionMultiplexer _connectionMultiplexer;
         private long _lastReconnectTicks = DateTimeOffset.MinValue.UtcTicks;
         private DateTimeOffset _firstErrorDate = DateTimeOffset.MinValue;
         private DateTimeOffset _previousErrorDate = DateTimeOffset.MinValue;
@@ -56,7 +56,7 @@ namespace StackExchange.Redis.Resilience
         /// <param name="connectionMultiplexerFactory">A synchronous factory for creating a <see cref="ConnectionMultiplexer"/>.</param>
         /// <param name="configuration">The configuration for configuring the <see cref="TryReconnect"/> method.</param>
         public ResilientConnectionMultiplexer(
-            Func<ConnectionMultiplexer> connectionMultiplexerFactory,
+            Func<IConnectionMultiplexer> connectionMultiplexerFactory,
             ResilientConnectionConfiguration configuration = null)
             : this(
                 connectionMultiplexerFactory,
@@ -75,10 +75,27 @@ namespace StackExchange.Redis.Resilience
             Func<ConnectionMultiplexer> connectionMultiplexerFactory,
             Func<Task<ConnectionMultiplexer>> connectionMultiplexerAsyncFactory,
             ResilientConnectionConfiguration configuration = null)
+            : this(
+                connectionMultiplexerFactory,
+                async () => (IConnectionMultiplexer)await connectionMultiplexerAsyncFactory(),
+                configuration)
+        {
+        }
+
+        /// <summary>
+        /// Constructor for creating a <see cref="ResilientConnectionMultiplexer"/>.
+        /// </summary>
+        /// <param name="connectionMultiplexerFactory">A synchronous factory for creating a <see cref="ConnectionMultiplexer"/>.</param>
+        /// <param name="connectionMultiplexerAsyncFactory">A asynchronous factory for creating a <see cref="ConnectionMultiplexer"/>.</param>
+        /// <param name="configuration">The configuration for configuring the <see cref="TryReconnect"/> method.</param>
+        public ResilientConnectionMultiplexer(
+            Func<IConnectionMultiplexer> connectionMultiplexerFactory,
+            Func<Task<IConnectionMultiplexer>> connectionMultiplexerAsyncFactory,
+            ResilientConnectionConfiguration configuration = null)
         {
             _connectionMultiplexerFactory = connectionMultiplexerFactory;
             _connectionMultiplexerAsyncFactory = connectionMultiplexerAsyncFactory;
-            configuration = configuration ?? new ResilientConnectionConfiguration();
+            configuration ??= new ResilientConnectionConfiguration();
             _reconnectMinFrequency = configuration.ReconnectMinFrequency;
             _reconnectErrorThreshold = configuration.ReconnectErrorThreshold;
             _connectionMultiplexer = _connectionMultiplexerFactory();
@@ -99,46 +116,6 @@ namespace StackExchange.Redis.Resilience
         public long LastReconnectTicks => Interlocked.Read(ref _lastReconnectTicks);
 
         #region IConnectionMultiplexer implementation
-
-        /// <inheritdoc />
-        public string ClientName => _connectionMultiplexer.ClientName;
-
-        /// <inheritdoc />
-        public string Configuration => _connectionMultiplexer.Configuration;
-
-        /// <inheritdoc />
-        public int TimeoutMilliseconds => _connectionMultiplexer.TimeoutMilliseconds;
-
-        /// <inheritdoc />
-        public long OperationCount => _connectionMultiplexer.OperationCount;
-
-        /// <inheritdoc />
-        [Obsolete]
-        public bool PreserveAsyncOrder
-        {
-            get => _connectionMultiplexer.PreserveAsyncOrder;
-            set => _connectionMultiplexer.PreserveAsyncOrder = value;
-        }
-
-        /// <inheritdoc />
-        public bool IsConnected => _connectionMultiplexer.IsConnected;
-
-        /// <inheritdoc />
-        public bool IsConnecting => _connectionMultiplexer.IsConnecting;
-
-        /// <inheritdoc />
-        public bool IncludeDetailInExceptions
-        {
-            get => _connectionMultiplexer.IncludeDetailInExceptions;
-            set => _connectionMultiplexer.IncludeDetailInExceptions = value;
-        }
-
-        /// <inheritdoc />
-        public int StormLogThreshold
-        {
-            get => _connectionMultiplexer.StormLogThreshold;
-            set => _connectionMultiplexer.StormLogThreshold = value;
-        }
 
         /// <inheritdoc />
         public event EventHandler<RedisErrorEventArgs> ErrorMessage
@@ -190,64 +167,17 @@ namespace StackExchange.Redis.Resilience
         }
 
         /// <inheritdoc />
-        public void Close(bool allowCommandsToComplete = true)
-        {
-            ExecuteAction(() => _connectionMultiplexer.Close(allowCommandsToComplete));
-        }
-
-        /// <inheritdoc />
-        public Task CloseAsync(bool allowCommandsToComplete = true)
-        {
-            return ExecuteActionAsync(() => _connectionMultiplexer.CloseAsync(allowCommandsToComplete));
-        }
-
-        /// <inheritdoc />
-        public bool Configure(TextWriter log = null)
-        {
-            return ExecuteAction(() => _connectionMultiplexer.Configure(log));
-        }
-
-        /// <inheritdoc />
-        public Task<bool> ConfigureAsync(TextWriter log = null)
-        {
-            return ExecuteActionAsync(() => _connectionMultiplexer.ConfigureAsync(log));
-        }
-
-        /// <inheritdoc />
         public void Dispose()
         {
-            if (_isDisposed)
-            {
-                return;
-            }
-
-            _isDisposed = true;
-
-            // Clear handlers
-            _errorMessageHandlers.Clear();
-            _connectionFailedHandlers.Clear();
-            _internalErrorHandlers.Clear();
-            _connectionRestoredHandlers.Clear();
-            _configurationChangedHandlers.Clear();
-            _configurationChangedBroadcastHandlers.Clear();
-            _hashSlotMovedHandlers.Clear();
-            Reconnected = null;
-
-            _profilingSessionProvider = null;
-
+            CleanupAndMarkDisposed();
             _connectionMultiplexer.Dispose();
         }
 
         /// <inheritdoc />
-        public void ExportConfiguration(Stream destination, ExportOptions options = (ExportOptions) (-1))
+        public ValueTask DisposeAsync()
         {
-            ExecuteAction(() => _connectionMultiplexer.ExportConfiguration(destination, options));
-        }
-
-        /// <inheritdoc />
-        public ServerCounters GetCounters()
-        {
-            return ExecuteAction(() => _connectionMultiplexer.GetCounters());
+            CleanupAndMarkDisposed();
+            return _connectionMultiplexer.DisposeAsync();
         }
 
         /// <inheritdoc />
@@ -257,15 +187,15 @@ namespace StackExchange.Redis.Resilience
         }
 
         /// <inheritdoc />
-        public EndPoint[] GetEndPoints(bool configuredOnly = false)
+        public IServer[] GetServers()
         {
-            return ExecuteAction(() => _connectionMultiplexer.GetEndPoints(configuredOnly));
-        }
-
-        /// <inheritdoc />
-        public int GetHashSlot(RedisKey key)
-        {
-            return ExecuteAction(() => _connectionMultiplexer.GetHashSlot(key));
+            return ExecuteAction(() =>
+            {
+                return _connectionMultiplexer.GetServers().Select(o => GetResilientServer(() =>
+                {
+                    return _connectionMultiplexer.GetServers().First(s => s.EndPoint.Equals(o.EndPoint));
+                })).ToArray();
+            });
         }
 
         /// <inheritdoc />
@@ -292,29 +222,6 @@ namespace StackExchange.Redis.Resilience
             return GetResilientServer(() => _connectionMultiplexer.GetServer(endpoint, asyncState));
         }
 
-        private IServer GetResilientServer(Func<IServer> serverProvider)
-        {
-            return new ResilientServer(this, serverProvider);
-        }
-
-        /// <inheritdoc />
-        public string GetStatus()
-        {
-            return ExecuteAction(() => _connectionMultiplexer.GetStatus());
-        }
-
-        /// <inheritdoc />
-        public void GetStatus(TextWriter log)
-        {
-            ExecuteAction(() => _connectionMultiplexer.GetStatus(log));
-        }
-
-        /// <inheritdoc />
-        public string GetStormLog()
-        {
-            return ExecuteAction(() => _connectionMultiplexer.GetStormLog());
-        }
-
         /// <inheritdoc />
         public ISubscriber GetSubscriber(object asyncState = null)
         {
@@ -322,52 +229,10 @@ namespace StackExchange.Redis.Resilience
         }
 
         /// <inheritdoc />
-        public int HashSlot(RedisKey key)
-        {
-            return ExecuteAction(() => _connectionMultiplexer.HashSlot(key));
-        }
-
-        /// <inheritdoc />
-        public long PublishReconfigure(CommandFlags flags = CommandFlags.None)
-        {
-            return ExecuteAction(() => _connectionMultiplexer.PublishReconfigure(flags));
-        }
-
-        /// <inheritdoc />
-        public Task<long> PublishReconfigureAsync(CommandFlags flags = CommandFlags.None)
-        {
-            return ExecuteActionAsync(() => _connectionMultiplexer.PublishReconfigureAsync(flags));
-        }
-
-        /// <inheritdoc />
         public void RegisterProfiler(Func<ProfilingSession> profilingSessionProvider)
         {
             _profilingSessionProvider = profilingSessionProvider;
             ExecuteAction(() => _connectionMultiplexer.RegisterProfiler(profilingSessionProvider));
-        }
-
-        /// <inheritdoc />
-        public void ResetStormLog()
-        {
-            ExecuteAction(() => _connectionMultiplexer.ResetStormLog());
-        }
-
-        /// <inheritdoc />
-        public void Wait(Task task)
-        {
-            ExecuteAction(() => _connectionMultiplexer.Wait(task));
-        }
-
-        /// <inheritdoc />
-        public T Wait<T>(Task<T> task)
-        {
-            return ExecuteAction(() => _connectionMultiplexer.Wait(task));
-        }
-
-        /// <inheritdoc />
-        public void WaitAll(params Task[] tasks)
-        {
-            ExecuteAction(() => _connectionMultiplexer.WaitAll(tasks));
         }
 
         #endregion
@@ -479,15 +344,21 @@ namespace StackExchange.Redis.Resilience
             return false;
         }
 
-        private void SetupMultiplexer(ConnectionMultiplexer newMultiplexer, ConnectionMultiplexer oldMultiplexer)
+        private void SetupMultiplexer(IConnectionMultiplexer newMultiplexer, IConnectionMultiplexer oldMultiplexer)
         {
             _connectionMultiplexer = newMultiplexer;
             CloseMultiplexer(oldMultiplexer);
 
             // Copy properties that have a setter
+#pragma warning disable CS0618
             _connectionMultiplexer.IncludeDetailInExceptions = oldMultiplexer.IncludeDetailInExceptions;
             _connectionMultiplexer.StormLogThreshold = oldMultiplexer.StormLogThreshold;
-            _connectionMultiplexer.IncludePerformanceCountersInExceptions = oldMultiplexer.IncludePerformanceCountersInExceptions;
+            if (_connectionMultiplexer is ConnectionMultiplexer connectionMultiplexer && oldMultiplexer is ConnectionMultiplexer oldConnectionMultiplexer)
+            {
+                connectionMultiplexer.IncludePerformanceCountersInExceptions = oldConnectionMultiplexer.IncludePerformanceCountersInExceptions;
+            }
+#pragma warning restore CS0618
+
             if (_profilingSessionProvider != null)
             {
                 _connectionMultiplexer.RegisterProfiler(_profilingSessionProvider);
@@ -580,7 +451,7 @@ namespace StackExchange.Redis.Resilience
             }
         }
 
-        private ConnectionMultiplexer TryCreateMultiplexer()
+        private IConnectionMultiplexer TryCreateMultiplexer()
         {
             try
             {
@@ -595,7 +466,7 @@ namespace StackExchange.Redis.Resilience
             }
         }
 
-        private Task<ConnectionMultiplexer> TryCreateMultiplexerAsync()
+        private Task<IConnectionMultiplexer> TryCreateMultiplexerAsync()
         {
             try
             {
@@ -610,7 +481,7 @@ namespace StackExchange.Redis.Resilience
             }
         }
 
-        private void CloseMultiplexer(ConnectionMultiplexer oldMultiplexer)
+        private void CloseMultiplexer(IConnectionMultiplexer oldMultiplexer)
         {
             try
             {
@@ -622,6 +493,11 @@ namespace StackExchange.Redis.Resilience
                     e,
                     "An error occurred while trying to dispose the old multiplexer."));
             }
+        }
+
+        private IServer GetResilientServer(Func<IServer> serverProvider)
+        {
+            return new ResilientServer(this, serverProvider);
         }
 
         private EventHandler<T> AddEventHandler<T>(EventHandler<T> handler, List<EventHandler<T>> list)
@@ -662,6 +538,28 @@ namespace StackExchange.Redis.Resilience
         private void ExecuteAction(System.Action action)
         {
             ExecuteAction(this, action);
+        }
+
+        private void CleanupAndMarkDisposed()
+        {
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            _isDisposed = true;
+
+            // Clear handlers
+            _errorMessageHandlers.Clear();
+            _connectionFailedHandlers.Clear();
+            _internalErrorHandlers.Clear();
+            _connectionRestoredHandlers.Clear();
+            _configurationChangedHandlers.Clear();
+            _configurationChangedBroadcastHandlers.Clear();
+            _hashSlotMovedHandlers.Clear();
+            Reconnected = null;
+
+            _profilingSessionProvider = null;
         }
 
         internal static void ExecuteAction(IResilientConnectionMultiplexer resilientConnectionMultiplexer, System.Action action)
