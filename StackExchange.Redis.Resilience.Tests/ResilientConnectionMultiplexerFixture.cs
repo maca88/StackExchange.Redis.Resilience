@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using StackExchange.Redis.Maintenance;
 
 namespace StackExchange.Redis.Resilience.Tests
 {
@@ -123,7 +124,7 @@ namespace StackExchange.Redis.Resilience.Tests
         public void ReconnectEvents()
         {
             using var mux = CreateMultiplexer();
-            var arguments = new List<EventArgs>();
+            var arguments = new List<object>();
             var totalReconnects = 0;
 
             EventHandler<InternalErrorEventArgs> internalError = (sender, args) => arguments.Add(args);
@@ -133,6 +134,7 @@ namespace StackExchange.Redis.Resilience.Tests
             EventHandler<ConnectionFailedEventArgs> connectionRestored = (sender, args) => arguments.Add(args);
             EventHandler<RedisErrorEventArgs> errorMessage = (sender, args) => arguments.Add(args);
             EventHandler<HashSlotMovedEventArgs> hashSlotMoved = (sender, args) => arguments.Add(args);
+            EventHandler<ServerMaintenanceEvent> serverMaintenance = (sender, args) => arguments.Add(args);
 
             mux.InternalError += internalError;
             mux.ConfigurationChanged += configurationChanged;
@@ -141,6 +143,7 @@ namespace StackExchange.Redis.Resilience.Tests
             mux.ConnectionRestored += connectionRestored;
             mux.ErrorMessage += errorMessage;
             mux.HashSlotMoved += hashSlotMoved;
+            mux.ServerMaintenanceEvent += serverMaintenance;
             mux.Reconnected += (sender, args) => totalReconnects++;
 
             AssertCalls();
@@ -153,7 +156,7 @@ namespace StackExchange.Redis.Resilience.Tests
             {
                 arguments.Clear();
                 CallHandlers();
-                Assert.That(arguments.Where(o => o == null).ToList(), Has.Count.EqualTo(7));
+                Assert.That(arguments.Where(o => o == null).ToList(), Has.Count.EqualTo(8));
             }
 
             void CallHandlers()
@@ -165,6 +168,7 @@ namespace StackExchange.Redis.Resilience.Tests
                 Raise<ConnectionFailedEventArgs>(mux, nameof(IConnectionMultiplexer.ConnectionRestored), null);
                 Raise<RedisErrorEventArgs>(mux, nameof(IConnectionMultiplexer.ErrorMessage), null);
                 Raise<HashSlotMovedEventArgs>(mux, nameof(IConnectionMultiplexer.HashSlotMoved), null);
+                Raise<ServerMaintenanceEvent>(mux, nameof(IConnectionMultiplexer.ServerMaintenanceEvent), null);
             }
         }
 
@@ -339,7 +343,7 @@ namespace StackExchange.Redis.Resilience.Tests
         }
 
         private static void Raise<TEventArgs>(ResilientConnectionMultiplexer source, string eventName,
-            TEventArgs eventArgs) where TEventArgs : EventArgs
+            TEventArgs eventArgs)
         {
             var eventDelegate = (Delegate) source.ConnectionMultiplexer.GetType()
                 .GetField(eventName, BindingFlags.Instance | BindingFlags.NonPublic)

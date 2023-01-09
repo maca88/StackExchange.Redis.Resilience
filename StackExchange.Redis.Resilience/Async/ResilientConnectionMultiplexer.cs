@@ -16,6 +16,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using StackExchange.Redis.Maintenance;
 using StackExchange.Redis.Profiling;
 
 namespace StackExchange.Redis.Resilience
@@ -132,6 +133,7 @@ namespace StackExchange.Redis.Resilience
             PopulateEventHandlers(_configurationChangedHandlers, handler => newMultiplexer.ConfigurationChanged += handler);
             PopulateEventHandlers(_configurationChangedBroadcastHandlers, handler => newMultiplexer.ConfigurationChangedBroadcast += handler);
             PopulateEventHandlers(_hashSlotMovedHandlers, handler => newMultiplexer.HashSlotMoved += handler);
+            PopulateEventHandlers(_serverMaintenanceHandlers, handler => newMultiplexer.ServerMaintenanceEvent += handler);
             cancellationToken.ThrowIfCancellationRequested();
 
             await (PopulateSubscribersAsync()).ConfigureAwait(false);

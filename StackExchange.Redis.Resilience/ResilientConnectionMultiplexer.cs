@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using StackExchange.Redis.Maintenance;
 using StackExchange.Redis.Profiling;
 
 namespace StackExchange.Redis.Resilience
@@ -37,6 +38,7 @@ namespace StackExchange.Redis.Resilience
         private readonly List<EventHandler<EndPointEventArgs>> _configurationChangedHandlers = new List<EventHandler<EndPointEventArgs>>();
         private readonly List<EventHandler<EndPointEventArgs>> _configurationChangedBroadcastHandlers = new List<EventHandler<EndPointEventArgs>>();
         private readonly List<EventHandler<HashSlotMovedEventArgs>> _hashSlotMovedHandlers = new List<EventHandler<HashSlotMovedEventArgs>>();
+        private readonly List<EventHandler<ServerMaintenanceEvent>> _serverMaintenanceHandlers = new List<EventHandler<ServerMaintenanceEvent>>();
 
         // Subscriptions
         private readonly Dictionary<RedisChannel, List<RedisSubscription>> _subscriptions = new Dictionary<RedisChannel, List<RedisSubscription>>();
@@ -164,6 +166,13 @@ namespace StackExchange.Redis.Resilience
         {
             add => _connectionMultiplexer.HashSlotMoved += AddEventHandler(value, _hashSlotMovedHandlers);
             remove => _connectionMultiplexer.HashSlotMoved -= RemoveEventHandler(value, _hashSlotMovedHandlers);
+        }
+
+        /// <inheritdoc />
+        public event EventHandler<ServerMaintenanceEvent> ServerMaintenanceEvent
+        {
+            add => _connectionMultiplexer.ServerMaintenanceEvent += AddEventHandler(value, _serverMaintenanceHandlers);
+            remove => _connectionMultiplexer.ServerMaintenanceEvent -= RemoveEventHandler(value, _serverMaintenanceHandlers);
         }
 
         /// <inheritdoc />
@@ -371,6 +380,7 @@ namespace StackExchange.Redis.Resilience
             PopulateEventHandlers(_configurationChangedHandlers, handler => newMultiplexer.ConfigurationChanged += handler);
             PopulateEventHandlers(_configurationChangedBroadcastHandlers, handler => newMultiplexer.ConfigurationChangedBroadcast += handler);
             PopulateEventHandlers(_hashSlotMovedHandlers, handler => newMultiplexer.HashSlotMoved += handler);
+            PopulateEventHandlers(_serverMaintenanceHandlers, handler => newMultiplexer.ServerMaintenanceEvent += handler);
 
             PopulateSubscribers();
 
@@ -557,6 +567,7 @@ namespace StackExchange.Redis.Resilience
             _configurationChangedHandlers.Clear();
             _configurationChangedBroadcastHandlers.Clear();
             _hashSlotMovedHandlers.Clear();
+            _serverMaintenanceHandlers.Clear();
             Reconnected = null;
 
             _profilingSessionProvider = null;

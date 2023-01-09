@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Product>StackExchange.Redis.Resilience</Product>
     <Title>StackExchange.Redis.Resilience</Title>
-    <Version>2.6.66</Version>
+    <Version>2.6.86</Version>
     <Authors>maca88</Authors>
     <Company />
     <Description>Provides a solution to force reconnect when StackExchange.Redis fails to reconnect after a connection blip.</Description>
@@ -21,6 +21,6 @@
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="StackExchange.Redis" Version="2.6.66" />
+    <PackageReference Include="StackExchange.Redis" Version="2.6.86" />
   </ItemGroup>
 </Project>
