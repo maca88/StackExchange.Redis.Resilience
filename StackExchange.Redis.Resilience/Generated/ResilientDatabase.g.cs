@@ -668,6 +668,18 @@ namespace StackExchange.Redis.Resilience
         }
 
         /// <inheritdoc />
+        public StackExchange.Redis.RedisResult ScriptEvaluateReadOnly(string script, StackExchange.Redis.RedisKey[]? keys = default, StackExchange.Redis.RedisValue[]? values = default, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ScriptEvaluateReadOnly(script, keys, values, flags));
+        }
+
+        /// <inheritdoc />
+        public StackExchange.Redis.RedisResult ScriptEvaluateReadOnly(byte[] hash, StackExchange.Redis.RedisKey[]? keys = default, StackExchange.Redis.RedisValue[]? values = default, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ScriptEvaluateReadOnly(hash, keys, values, flags));
+        }
+
+        /// <inheritdoc />
         public bool SetAdd(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue value, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
         {
             return ExecuteAction(() => _instance!.Value.SetAdd(key, value, flags));
@@ -2042,6 +2054,18 @@ namespace StackExchange.Redis.Resilience
         public System.Threading.Tasks.Task<StackExchange.Redis.RedisResult> ScriptEvaluateAsync(StackExchange.Redis.LoadedLuaScript script, object? parameters = default, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
         {
             return ExecuteActionAsync(() => _instance!.Value.ScriptEvaluateAsync(script, parameters, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.RedisResult> ScriptEvaluateReadOnlyAsync(string script, StackExchange.Redis.RedisKey[]? keys = default, StackExchange.Redis.RedisValue[]? values = default, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ScriptEvaluateReadOnlyAsync(script, keys, values, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.RedisResult> ScriptEvaluateReadOnlyAsync(byte[] hash, StackExchange.Redis.RedisKey[]? keys = default, StackExchange.Redis.RedisValue[]? values = default, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ScriptEvaluateReadOnlyAsync(hash, keys, values, flags));
         }
 
         /// <inheritdoc />
