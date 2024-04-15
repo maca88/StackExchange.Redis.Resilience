@@ -734,6 +734,9 @@ namespace StackExchange.Redis.Resilience
         public bool IsConnected => _instance!.Value.IsConnected;
 
         /// <inheritdoc />
+        public StackExchange.Redis.RedisProtocol Protocol => _instance!.Value.Protocol;
+
+        /// <inheritdoc />
         [System.ObsoleteAttribute("Starting with Redis version 5, Redis has moved to 'replica' terminology. Please use IsReplica instead, this will be removed in 3.0.")]
         public bool IsSlave => _instance!.Value.IsSlave;
 

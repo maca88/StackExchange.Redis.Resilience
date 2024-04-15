@@ -118,6 +118,12 @@ namespace StackExchange.Redis.Resilience
         }
 
         /// <inheritdoc />
+        public void AddLibraryNameSuffix(string suffix)
+        {
+            ExecuteAction(() => _connectionMultiplexer.AddLibraryNameSuffix(suffix));
+        }
+
+        /// <inheritdoc />
         public string ClientName => _connectionMultiplexer.ClientName;
 
         /// <inheritdoc />
