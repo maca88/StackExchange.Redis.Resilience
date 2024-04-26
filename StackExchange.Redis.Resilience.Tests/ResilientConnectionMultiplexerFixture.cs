@@ -221,6 +221,7 @@ namespace StackExchange.Redis.Resilience.Tests
 
             // Simulate RedisConnectionException
             mux.ConnectionMultiplexer.Dispose();
+            Assert.Throws<ObjectDisposedException>(() => subscriber.Publish(channel, true));
             ResetDisposeField(mux.ConnectionMultiplexer);
 
             Assert.Throws<RedisConnectionException>(() => subscriber.Publish(channel, true)); // set first error

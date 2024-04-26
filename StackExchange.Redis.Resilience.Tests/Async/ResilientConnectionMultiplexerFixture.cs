@@ -230,6 +230,7 @@ namespace StackExchange.Redis.Resilience.Tests
 
             // Simulate RedisConnectionException
             await (mux.ConnectionMultiplexer.DisposeAsync());
+            Assert.ThrowsAsync<ObjectDisposedException>(() => subscriber.PublishAsync(channel, true));
             ResetDisposeField(mux.ConnectionMultiplexer);
 
             Assert.ThrowsAsync<RedisConnectionException>(() => subscriber.PublishAsync(channel, true)); // set first error

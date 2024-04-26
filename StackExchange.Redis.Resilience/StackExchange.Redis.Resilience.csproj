@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Product>StackExchange.Redis.Resilience</Product>
     <Title>StackExchange.Redis.Resilience</Title>
-    <Version>2.6.122</Version>
+    <Version>2.7.33</Version>
     <Authors>maca88</Authors>
     <Company />
     <Description>Provides a solution to force reconnect when StackExchange.Redis fails to reconnect after a connection blip.</Description>
