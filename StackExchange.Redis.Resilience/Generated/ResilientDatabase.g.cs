@@ -170,6 +170,36 @@ namespace StackExchange.Redis.Resilience
         }
 
         /// <inheritdoc />
+        public StackExchange.Redis.ExpireResult[] HashFieldExpire(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue[] hashFields, System.TimeSpan expiry, StackExchange.Redis.ExpireWhen when = StackExchange.Redis.ExpireWhen.Always, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.HashFieldExpire(key, hashFields, expiry, when, flags));
+        }
+
+        /// <inheritdoc />
+        public StackExchange.Redis.ExpireResult[] HashFieldExpire(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue[] hashFields, System.DateTime expiry, StackExchange.Redis.ExpireWhen when = StackExchange.Redis.ExpireWhen.Always, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.HashFieldExpire(key, hashFields, expiry, when, flags));
+        }
+
+        /// <inheritdoc />
+        public long[] HashFieldGetExpireDateTime(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue[] hashFields, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.HashFieldGetExpireDateTime(key, hashFields, flags));
+        }
+
+        /// <inheritdoc />
+        public StackExchange.Redis.PersistResult[] HashFieldPersist(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue[] hashFields, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.HashFieldPersist(key, hashFields, flags));
+        }
+
+        /// <inheritdoc />
+        public long[] HashFieldGetTimeToLive(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue[] hashFields, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.HashFieldGetTimeToLive(key, hashFields, flags));
+        }
+
+        /// <inheritdoc />
         public StackExchange.Redis.RedisValue HashGet(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue hashField, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
         {
             return ExecuteAction(() => _instance!.Value.HashGet(key, hashField, flags));
@@ -245,6 +275,12 @@ namespace StackExchange.Redis.Resilience
         public System.Collections.Generic.IEnumerable<StackExchange.Redis.HashEntry> HashScan(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue pattern = default, int pageSize = 250, long cursor = 0, int pageOffset = 0, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
         {
             return ExecuteAction(() => _instance!.Value.HashScan(key, pattern, pageSize, cursor, pageOffset, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Collections.Generic.IEnumerable<StackExchange.Redis.RedisValue> HashScanNoValues(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue pattern = default, int pageSize = 250, long cursor = 0, int pageOffset = 0, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.HashScanNoValues(key, pattern, pageSize, cursor, pageOffset, flags));
         }
 
         /// <inheritdoc />
@@ -1565,6 +1601,36 @@ namespace StackExchange.Redis.Resilience
         }
 
         /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.ExpireResult[]> HashFieldExpireAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue[] hashFields, System.TimeSpan expiry, StackExchange.Redis.ExpireWhen when = StackExchange.Redis.ExpireWhen.Always, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.HashFieldExpireAsync(key, hashFields, expiry, when, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.ExpireResult[]> HashFieldExpireAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue[] hashFields, System.DateTime expiry, StackExchange.Redis.ExpireWhen when = StackExchange.Redis.ExpireWhen.Always, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.HashFieldExpireAsync(key, hashFields, expiry, when, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<long[]> HashFieldGetExpireDateTimeAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue[] hashFields, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.HashFieldGetExpireDateTimeAsync(key, hashFields, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.PersistResult[]> HashFieldPersistAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue[] hashFields, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.HashFieldPersistAsync(key, hashFields, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<long[]> HashFieldGetTimeToLiveAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue[] hashFields, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.HashFieldGetTimeToLiveAsync(key, hashFields, flags));
+        }
+
+        /// <inheritdoc />
         public System.Threading.Tasks.Task<StackExchange.Redis.RedisValue> HashGetAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue hashField, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
         {
             return ExecuteActionAsync(() => _instance!.Value.HashGetAsync(key, hashField, flags));
@@ -1634,6 +1700,12 @@ namespace StackExchange.Redis.Resilience
         public System.Collections.Generic.IAsyncEnumerable<StackExchange.Redis.HashEntry> HashScanAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue pattern = default, int pageSize = 250, long cursor = 0, int pageOffset = 0, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
         {
             return ExecuteAction(() => _instance!.Value.HashScanAsync(key, pattern, pageSize, cursor, pageOffset, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Collections.Generic.IAsyncEnumerable<StackExchange.Redis.RedisValue> HashScanNoValuesAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue pattern = default, int pageSize = 250, long cursor = 0, int pageOffset = 0, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.HashScanNoValuesAsync(key, pattern, pageSize, cursor, pageOffset, flags));
         }
 
         /// <inheritdoc />

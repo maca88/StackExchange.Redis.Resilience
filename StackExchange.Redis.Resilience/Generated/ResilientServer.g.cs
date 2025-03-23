@@ -50,6 +50,18 @@ namespace StackExchange.Redis.Resilience
         }
 
         /// <inheritdoc />
+        public long ClientKill(StackExchange.Redis.ClientKillFilter filter, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ClientKill(filter, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<long> ClientKillAsync(StackExchange.Redis.ClientKillFilter filter, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ClientKillAsync(filter, flags));
+        }
+
+        /// <inheritdoc />
         public StackExchange.Redis.ClientInfo[] ClientList(StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
         {
             return ExecuteAction(() => _instance!.Value.ClientList(flags));
