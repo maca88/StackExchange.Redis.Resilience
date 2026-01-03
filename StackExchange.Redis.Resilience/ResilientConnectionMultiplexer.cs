@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -44,7 +43,7 @@ namespace StackExchange.Redis.Resilience
         private readonly Dictionary<RedisChannel, List<RedisSubscription>> _subscriptions = new Dictionary<RedisChannel, List<RedisSubscription>>();
 
         // Profiling session provider
-        private Func<ProfilingSession> _profilingSessionProvider;
+        private Func<ProfilingSession?>? _profilingSessionProvider;
 
         private IConnectionMultiplexer _connectionMultiplexer;
         private long _lastReconnectTicks = DateTimeOffset.MinValue.UtcTicks;
@@ -59,7 +58,7 @@ namespace StackExchange.Redis.Resilience
         /// <param name="configuration">The configuration for configuring the <see cref="TryReconnect"/> method.</param>
         public ResilientConnectionMultiplexer(
             Func<IConnectionMultiplexer> connectionMultiplexerFactory,
-            ResilientConnectionConfiguration configuration = null)
+            ResilientConnectionConfiguration? configuration = null)
             : this(
                 connectionMultiplexerFactory,
                 () => Task.FromResult(connectionMultiplexerFactory()),
@@ -76,7 +75,7 @@ namespace StackExchange.Redis.Resilience
         public ResilientConnectionMultiplexer(
             Func<ConnectionMultiplexer> connectionMultiplexerFactory,
             Func<Task<ConnectionMultiplexer>> connectionMultiplexerAsyncFactory,
-            ResilientConnectionConfiguration configuration = null)
+            ResilientConnectionConfiguration? configuration = null)
             : this(
                 connectionMultiplexerFactory,
                 async () => (IConnectionMultiplexer)await connectionMultiplexerAsyncFactory(),
@@ -93,7 +92,7 @@ namespace StackExchange.Redis.Resilience
         public ResilientConnectionMultiplexer(
             Func<IConnectionMultiplexer> connectionMultiplexerFactory,
             Func<Task<IConnectionMultiplexer>> connectionMultiplexerAsyncFactory,
-            ResilientConnectionConfiguration configuration = null)
+            ResilientConnectionConfiguration? configuration = null)
         {
             _connectionMultiplexerFactory = connectionMultiplexerFactory;
             _connectionMultiplexerAsyncFactory = connectionMultiplexerAsyncFactory;
@@ -109,10 +108,10 @@ namespace StackExchange.Redis.Resilience
         public IConnectionMultiplexer ConnectionMultiplexer => _connectionMultiplexer;
 
         /// <inheritdoc />
-        public event EventHandler<ReconnectedEventArgs> Reconnected;
+        public event EventHandler<ReconnectedEventArgs>? Reconnected;
 
         /// <inheritdoc />
-        public event EventHandler<ReconnectErrorEventArgs> ReconnectError;
+        public event EventHandler<ReconnectErrorEventArgs>? ReconnectError;
 
         /// <inheritdoc />
         public long LastReconnectTicks => Interlocked.Read(ref _lastReconnectTicks);
@@ -190,7 +189,7 @@ namespace StackExchange.Redis.Resilience
         }
 
         /// <inheritdoc />
-        public IDatabase GetDatabase(int db = -1, object asyncState = null)
+        public IDatabase GetDatabase(int db = -1, object? asyncState = null)
         {
             return new ResilientDatabase(this, () => _connectionMultiplexer.GetDatabase(db, asyncState));
         }
@@ -208,13 +207,13 @@ namespace StackExchange.Redis.Resilience
         }
 
         /// <inheritdoc />
-        public IServer GetServer(string host, int port, object asyncState = null)
+        public IServer GetServer(string host, int port, object? asyncState = null)
         {
             return GetResilientServer(() => _connectionMultiplexer.GetServer(host, port, asyncState));
         }
 
         /// <inheritdoc />
-        public IServer GetServer(string hostAndPort, object asyncState = null)
+        public IServer GetServer(string hostAndPort, object? asyncState = null)
         {
             return GetResilientServer(() => _connectionMultiplexer.GetServer(hostAndPort, asyncState));
         }
@@ -226,19 +225,19 @@ namespace StackExchange.Redis.Resilience
         }
 
         /// <inheritdoc />
-        public IServer GetServer(EndPoint endpoint, object asyncState = null)
+        public IServer GetServer(EndPoint endpoint, object? asyncState = null)
         {
             return GetResilientServer(() => _connectionMultiplexer.GetServer(endpoint, asyncState));
         }
 
         /// <inheritdoc />
-        public ISubscriber GetSubscriber(object asyncState = null)
+        public ISubscriber GetSubscriber(object? asyncState = null)
         {
             return new ResilientSubscriber(this, () => _connectionMultiplexer.GetSubscriber(asyncState));
         }
 
         /// <inheritdoc />
-        public void RegisterProfiler(Func<ProfilingSession> profilingSessionProvider)
+        public void RegisterProfiler(Func<ProfilingSession?> profilingSessionProvider)
         {
             _profilingSessionProvider = profilingSessionProvider;
             ExecuteAction(() => _connectionMultiplexer.RegisterProfiler(profilingSessionProvider));
@@ -334,11 +333,17 @@ namespace StackExchange.Redis.Resilience
             _subscriptions.Clear();
         }
 
-        internal bool Unsubscribe(RedisChannel channel, Delegate handler)
+        internal bool Unsubscribe(RedisChannel channel, Delegate? handler)
         {
             if (!_subscriptions.TryGetValue(channel, out var subs))
             {
                 return false;
+            }
+
+            if (handler == null)
+            {
+                subs.Clear();
+                return true;
             }
 
             for (var i = 0; i < subs.Count; i++)
@@ -398,7 +403,7 @@ namespace StackExchange.Redis.Resilience
                 {
                     if (subscription.MessageQueue == null)
                     {
-                        subscriber.Subscribe(channel, subscription.Handler, subscription.Flags);
+                        subscriber.Subscribe(channel, subscription.Handler!, subscription.Flags);
                         continue;
                     }
 
@@ -428,7 +433,7 @@ namespace StackExchange.Redis.Resilience
         {
             try
             {
-                await subscription.MessageQueue.Completion.ConfigureAwait(false);
+                await subscription.MessageQueue!.Completion.ConfigureAwait(false);
             }
             catch { }
             finally
@@ -461,7 +466,7 @@ namespace StackExchange.Redis.Resilience
             }
         }
 
-        private IConnectionMultiplexer TryCreateMultiplexer()
+        private IConnectionMultiplexer? TryCreateMultiplexer()
         {
             try
             {
@@ -476,11 +481,11 @@ namespace StackExchange.Redis.Resilience
             }
         }
 
-        private Task<IConnectionMultiplexer> TryCreateMultiplexerAsync()
+        private async Task<IConnectionMultiplexer?> TryCreateMultiplexerAsync()
         {
             try
             {
-                return _connectionMultiplexerAsyncFactory();
+                return await _connectionMultiplexerAsyncFactory();
             }
             catch (Exception e)
             {

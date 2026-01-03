@@ -1,6 +1,6 @@
 ﻿projects:
 - filePath: StackExchange.Redis.Resilience\StackExchange.Redis.Resilience.csproj
-  targetFramework: net472
+  targetFramework: net8.0
   concurrentRun: false
   applyChanges: true
   analyzation:
@@ -23,9 +23,11 @@
   - type: AsyncGenerator.Core.Plugins.EmptyRegionRemover
     assemblyName: AsyncGenerator.Core
 - filePath: StackExchange.Redis.Resilience.Tests\StackExchange.Redis.Resilience.Tests.csproj
-  targetFramework: net472
+  targetFramework: net8.0
   concurrentRun: false
   applyChanges: true
+  suppressDiagnosticFailures:
+  - pattern: ^.*(Hashing).*$
   analyzation:
     cancellationTokens:
       enabled: true

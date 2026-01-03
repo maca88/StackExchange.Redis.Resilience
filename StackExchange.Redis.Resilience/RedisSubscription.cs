@@ -6,7 +6,7 @@ namespace StackExchange.Redis.Resilience
 {
     internal class RedisSubscription
     {
-        private readonly static Func<ChannelMessageQueue, Delegate> _getMessageQueueDelegate;
+        private static readonly Func<ChannelMessageQueue, Delegate> GetMessageQueueDelegate;
 
         static RedisSubscription()
         {
@@ -18,7 +18,7 @@ namespace StackExchange.Redis.Resilience
             }
 
             var p = Expression.Parameter(typeof(ChannelMessageQueue));
-            _getMessageQueueDelegate = Expression.Lambda<Func<ChannelMessageQueue, Delegate>>(Expression.Field(p, field), p).Compile();
+            GetMessageQueueDelegate = Expression.Lambda<Func<ChannelMessageQueue, Delegate>>(Expression.Field(p, field), p).Compile();
         }
 
         public RedisSubscription(RedisChannel channel, Action<RedisChannel, RedisValue> handler, CommandFlags flags)
@@ -37,22 +37,20 @@ namespace StackExchange.Redis.Resilience
 
         public RedisChannel Channel { get; }
 
-        public ChannelMessageQueue MessageQueue { get; }
+        public ChannelMessageQueue? MessageQueue { get; }
 
-        public Action<RedisChannel, RedisValue> Handler { get; }
+        public Action<RedisChannel, RedisValue>? Handler { get; }
 
         public CommandFlags Flags { get; }
-
-        public object AsyncState { get; }
 
         public Delegate GetHandler()
         {
             if (MessageQueue != null)
             {
-                return _getMessageQueueDelegate(MessageQueue);
+                return GetMessageQueueDelegate(MessageQueue);
             }
 
-            return Handler;
+            return Handler!;
         }
     }
 }

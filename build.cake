@@ -5,6 +5,7 @@
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
 var netfx = Argument("netfx", "net472");
+var nugetApiKey = Argument("nugetApiKey", "");
 
 //////////////////////////////////////////////////////////////////////
 // CONSTANTS
@@ -48,7 +49,7 @@ Task("build")
     .IsDependentOn("restore")
     .Does(() =>
 {
-    DotNetBuild("./StackExchange.Redis.Resilience.sln", new DotNetCoreBuildSettings
+    DotNetBuild("./StackExchange.Redis.Resilience.sln", new DotNetBuildSettings
     {
         Configuration = configuration,
         ArgumentCustomization = args => args.Append("--no-restore"),
@@ -58,7 +59,7 @@ Task("build")
 Task("build-source-generator")
     .Does(() =>
 {
-    DotNetBuild("./StackExchange.Redis.Resilience.SourceGenerator/StackExchange.Redis.Resilience.SourceGenerator.csproj", new DotNetCoreBuildSettings
+    DotNetBuild("./StackExchange.Redis.Resilience.SourceGenerator/StackExchange.Redis.Resilience.SourceGenerator.csproj", new DotNetBuildSettings
     {
         Configuration = "Release"
     });
@@ -68,7 +69,7 @@ Task("test")
     .IsDependentOn("build")
     .Does(() =>
 {
-    DotNetTest("./StackExchange.Redis.Resilience.Tests/StackExchange.Redis.Resilience.Tests.csproj", new DotNetCoreTestSettings
+    DotNetTest("./StackExchange.Redis.Resilience.Tests/StackExchange.Redis.Resilience.Tests.csproj", new DotNetTestSettings
     {
         Configuration = configuration,
         NoBuild = true
@@ -86,7 +87,7 @@ Task("generate-source")
     .IsDependentOn("build-source-generator")
     .Does(() =>
 {
-    DotNetExecute("./StackExchange.Redis.Resilience.SourceGenerator/bin/Release/net6.0/StackExchange.Redis.Resilience.SourceGenerator.dll");
+    DotNetExecute("./StackExchange.Redis.Resilience.SourceGenerator/bin/Release/net8.0/StackExchange.Redis.Resilience.SourceGenerator.dll");
 });
 
 //////////////////////////////////////////////////////////////////////
@@ -130,7 +131,9 @@ Task("publish")
     {
         DotNetNuGetPush(package, new DotNetNuGetPushSettings()
         {
-            Source = "https://api.nuget.org/v3/index.json"
+            Source = "https://api.nuget.org/v3/index.json",
+            ApiKey = nugetApiKey,
+            SkipDuplicate = true
         });
     }
 });

@@ -9,10 +9,10 @@ namespace StackExchange.Redis.Resilience
     /// </summary>
     internal class AtomicLazy<T>
     {
-        private readonly Func<T> _factory;
-        private T _value;
+        private readonly Func<T> _factory = null!;
+        private T _value = default!;
         private bool _initialized;
-        private object _lock;
+        private object _lock = null!;
 
         public AtomicLazy(Func<T> factory)
         {

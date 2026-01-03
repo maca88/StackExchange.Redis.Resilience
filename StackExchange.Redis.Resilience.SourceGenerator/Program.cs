@@ -19,7 +19,7 @@ namespace StackExchange.Redis.Resilience.SourceGenerator
         public static async Task<int> Main(string[] args)
         {
             MSBuildLocator.RegisterDefaults();
-            var workspace = CreateWorkspace("net5.0");
+            var workspace = CreateWorkspace("net8.0");
             var projectPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../StackExchange.Redis.Resilience/", "StackExchange.Redis.Resilience.csproj"));
             var project = await workspace.OpenProjectAsync(projectPath, null, CancellationToken.None);
             CheckForErrors(workspace);

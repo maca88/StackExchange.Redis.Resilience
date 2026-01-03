@@ -230,6 +230,18 @@ namespace StackExchange.Redis.Resilience
         }
 
         /// <inheritdoc />
+        public StackExchange.Redis.RedisResult Execute(int? database, string command, System.Collections.Generic.ICollection<object> args, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.Execute(database, command, args, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.RedisResult> ExecuteAsync(int? database, string command, System.Collections.Generic.ICollection<object> args, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ExecuteAsync(database, command, args, flags));
+        }
+
+        /// <inheritdoc />
         public void FlushAllDatabases(StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
         {
             ExecuteAction(() => _instance!.Value.FlushAllDatabases(flags));

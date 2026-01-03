@@ -46,6 +46,12 @@ namespace StackExchange.Redis.Resilience
         }
 
         /// <inheritdoc />
+        public StackExchange.Redis.IServer GetServer(StackExchange.Redis.RedisKey key, object? asyncState = default, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _connectionMultiplexer.GetServer(key, asyncState, flags));
+        }
+
+        /// <inheritdoc />
         public System.Threading.Tasks.Task<bool> ConfigureAsync(System.IO.TextWriter? log = default)
         {
             return ExecuteActionAsync(() => _connectionMultiplexer.ConfigureAsync(log));

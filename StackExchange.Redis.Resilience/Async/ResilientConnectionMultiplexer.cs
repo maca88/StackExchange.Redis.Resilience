@@ -10,7 +10,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -152,7 +151,7 @@ namespace StackExchange.Redis.Resilience
                 {
                     if (subscription.MessageQueue == null)
                     {
-                        await (subscriber.SubscribeAsync(channel, subscription.Handler, subscription.Flags)).ConfigureAwait(false);
+                        await (subscriber.SubscribeAsync(channel, subscription.Handler!, subscription.Flags)).ConfigureAwait(false);
                         continue;
                     }
 
