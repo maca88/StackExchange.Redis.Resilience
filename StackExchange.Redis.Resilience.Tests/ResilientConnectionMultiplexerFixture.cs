@@ -61,6 +61,11 @@ namespace StackExchange.Redis.Resilience.Tests
             if (unsubscribeAfterReconnect)
             {
                 Unsubscribe();
+                // queue2/queue3 are stale, pre-reconnect references: Unsubscribe() on them only detaches the queue
+                // that replaced them once the library's background continuation observes the old queue's Completion.
+                // Give that a moment to run before publishing, otherwise the still-live replacement queue receives
+                // the message before it gets unsubscribed.
+                Thread.Sleep(100);
             }
 
             tasks = CreateTaskList(taskValues, taskCount);
@@ -257,7 +262,7 @@ namespace StackExchange.Redis.Resilience.Tests
 
         private static ResilientConnectionMultiplexer CreateMultiplexer()
         {
-            var configuration = "127.0.0.1";
+            var configuration = RedisServerFixture.ConnectionString;
             return new ResilientConnectionMultiplexer(
                 () => ConnectionMultiplexer.Connect(configuration),
                 () => ConnectionMultiplexer.ConnectAsync(configuration),

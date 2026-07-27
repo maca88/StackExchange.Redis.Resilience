@@ -406,7 +406,19 @@ namespace StackExchange.Redis.Resilience
                 {
                     if (subscription.MessageQueue == null)
                     {
-                        subscriber.Subscribe(channel, subscription.Handler!, subscription.Flags);
+                        try
+                        {
+                            subscriber.Subscribe(channel, subscription.Handler!, subscription.Flags);
+                        }
+                        catch (Exception e)
+                        {
+                            // A single channel failing to restore should not prevent the others from being restored.
+                            // The subscription is left in place so that it is retried on the next reconnect.
+                            InvokeReconnectErrorHandler(new ReconnectErrorEventArgs(
+                                e,
+                                $"An error occurred while restoring the subscription for channel '{channel}'."));
+                        }
+
                         continue;
                     }
 
@@ -416,7 +428,21 @@ namespace StackExchange.Redis.Resilience
                         continue; // The queue was unsubscribed
                     }
 
-                    var messageQueue = subscriber.Subscribe(channel, subscription.Flags);
+                    ChannelMessageQueue messageQueue;
+                    try
+                    {
+                        messageQueue = subscriber.Subscribe(channel, subscription.Flags);
+                    }
+                    catch (Exception e)
+                    {
+                        // A single channel failing to restore should not prevent the others from being restored.
+                        // The subscription is left in place so that it is retried on the next reconnect.
+                        InvokeReconnectErrorHandler(new ReconnectErrorEventArgs(
+                            e,
+                            $"An error occurred while restoring the subscription for channel '{channel}'."));
+                        continue;
+                    }
+
                     var handler = subscription.GetHandler();
                     if (handler is Action<ChannelMessage> syncHandler)
                     {

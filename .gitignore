@@ -247,3 +247,6 @@ ModelManifest.xml
 Tools/**
 .idea/
 *.dev.props
+
+# Claude Code
+.claude/

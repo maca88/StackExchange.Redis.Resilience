@@ -1,5 +1,5 @@
 ﻿projects:
-- filePath: StackExchange.Redis.Resilience\StackExchange.Redis.Resilience.csproj
+- filePath: StackExchange.Redis.Resilience/StackExchange.Redis.Resilience.csproj
   targetFramework: net8.0
   concurrentRun: false
   applyChanges: true
@@ -22,12 +22,13 @@
   registerPlugin:
   - type: AsyncGenerator.Core.Plugins.EmptyRegionRemover
     assemblyName: AsyncGenerator.Core
-- filePath: StackExchange.Redis.Resilience.Tests\StackExchange.Redis.Resilience.Tests.csproj
-  targetFramework: net8.0
+- filePath: StackExchange.Redis.Resilience.Tests/StackExchange.Redis.Resilience.Tests.csproj
+  targetFramework: net10.0
   concurrentRun: false
   applyChanges: true
   suppressDiagnosticFailures:
   - pattern: ^.*(Hashing).*$
+  - pattern: ^.*(Newtonsoft.Json).*$
   analyzation:
     cancellationTokens:
       enabled: true

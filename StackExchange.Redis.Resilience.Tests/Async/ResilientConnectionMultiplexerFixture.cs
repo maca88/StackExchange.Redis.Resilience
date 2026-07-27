@@ -69,6 +69,11 @@ namespace StackExchange.Redis.Resilience.Tests
             if (unsubscribeAfterReconnect)
             {
                 await (UnsubscribeAsync());
+                // queue2/queue3 are stale, pre-reconnect references: Unsubscribe() on them only detaches the queue
+                // that replaced them once the library's background continuation observes the old queue's Completion.
+                // Give that a moment to run before publishing, otherwise the still-live replacement queue receives
+                // the message before it gets unsubscribed.
+                await (Task.Delay(100));
             }
 
             tasks = CreateTaskList(taskValues, taskCount);
