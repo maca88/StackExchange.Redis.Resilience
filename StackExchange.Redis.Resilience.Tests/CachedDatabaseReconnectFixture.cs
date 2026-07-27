@@ -36,7 +36,7 @@ namespace StackExchange.Redis.Resilience.Tests
         [Test]
         public async Task CachedDatabaseSurvivesConcurrentReconnects()
         {
-            var configuration = RedisServerFixture.ConnectionString;
+            var configuration = BuildConfigurationOptions();
             using var mux = new ResilientConnectionMultiplexer(
                 () => ConnectionMultiplexer.Connect(configuration),
                 () => ConnectionMultiplexer.ConnectAsync(configuration),
@@ -78,7 +78,7 @@ namespace StackExchange.Redis.Resilience.Tests
         [Test]
         public async Task CachedDatabaseHealsAfterSubscriberRestoreFailure()
         {
-            var configuration = RedisServerFixture.ConnectionString;
+            var configuration = BuildConfigurationOptions();
             var faults = new FaultInjector();
             using var mux = new ResilientConnectionMultiplexer(
                 () => FaultyMultiplexer.Wrap(ConnectionMultiplexer.Connect(configuration), faults),
@@ -123,7 +123,7 @@ namespace StackExchange.Redis.Resilience.Tests
         [Test]
         public async Task OneFailingSubscriptionDoesNotPreventOthersFromBeingRestored()
         {
-            var configuration = RedisServerFixture.ConnectionString;
+            var configuration = BuildConfigurationOptions();
             var faults = new FaultInjector();
             using var mux = new ResilientConnectionMultiplexer(
                 () => FaultyMultiplexer.Wrap(ConnectionMultiplexer.Connect(configuration), faults),
@@ -164,6 +164,18 @@ namespace StackExchange.Redis.Resilience.Tests
             var received = await healthyReceived.Task.WaitAsync(TimeSpan.FromSeconds(5));
             Assert.That(received, Is.True,
                 "the healthy channel's subscription should have survived the other channel's restoration failure");
+        }
+
+        private static ConfigurationOptions BuildConfigurationOptions()
+        {
+            var options = ConfigurationOptions.Parse(RedisServerFixture.ConnectionString);
+            // 32 concurrent workers plus 10 forced reconnects can push a command past the default 5s
+            // SyncTimeout/AsyncTimeout under CI contention. That would surface as a TaskCanceledException
+            // unrelated to what this test actually checks for, so give commands more headroom here rather
+            // than weakening the assertions or the concurrency level driving the race this test exists to catch.
+            options.SyncTimeout = 30000;
+            options.AsyncTimeout = 30000;
+            return options;
         }
 
         private static ResilientConnectionConfiguration NewConfiguration()

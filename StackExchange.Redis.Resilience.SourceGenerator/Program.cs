@@ -159,6 +159,17 @@ namespace StackExchange.Redis.Resilience
 
                 if (member is IMethodSymbol methodSymbol && methodSymbol.MethodKind != MethodKind.PropertyGet && methodSymbol.MethodKind != MethodKind.PropertySet)
                 {
+                    if (methodSymbol.Parameters.Any(o => o.RefKind == RefKind.Ref))
+                    {
+                        // A lambda cannot capture a ref parameter of the enclosing method, and unlike out
+                        // parameters, a ref's bidirectional semantics make it unclear whether a retry by
+                        // ExecuteAction should reuse the value from the failed attempt or reseed from the
+                        // caller's original input. Implement the member by hand in the non-generated partial
+                        // class file instead. (out and in parameters are handled below.)
+                        Console.WriteLine($"Skipping {interfaceFullName}.{methodSymbol.Name}: has a ref parameter and must be implemented by hand.");
+                        continue;
+                    }
+
                     PrependAttributes(member, bodyBuilder);
                     bodyBuilder.Append(GenerateMethod(methodSymbol, instancePath));
                 }
@@ -219,14 +230,19 @@ namespace StackExchange.Redis.Resilience
                     type += "?";
                 }
 
-                var p = $"{type} {o.Name}";
+                var modifier = o.RefKind == RefKind.Out ? "out " : o.RefKind == RefKind.In ? "in " : "";
+                var p = $"{modifier}{type} {o.Name}";
                 if (o.HasExplicitDefaultValue)
                 {
                     var value = o.ExplicitDefaultValue;
                     if (o.Type.TypeKind == TypeKind.Enum)
                     {
-                        var field = o.Type.GetMembers().OfType<IFieldSymbol>().First(f => f.ConstantValue!.Equals(o.ExplicitDefaultValue));
-                        value = $"{o.Type.ToDisplayString()}.{field.Name}";
+                        // Not every enum default value corresponds to a named member (e.g. a sentinel like -1 for
+                        // "all flags" that was never given its own name), so fall back to a numeric cast in that case.
+                        var field = o.Type.GetMembers().OfType<IFieldSymbol>().FirstOrDefault(f => f.ConstantValue!.Equals(o.ExplicitDefaultValue));
+                        value = field != null
+                            ? $"{o.Type.ToDisplayString()}.{field.Name}"
+                            : $"({o.Type.ToDisplayString()})({o.ExplicitDefaultValue})";
                     }
                     else if (o.ExplicitDefaultValue is bool boolean)
                     {
@@ -244,13 +260,46 @@ namespace StackExchange.Redis.Resilience
 
                 return p;
             }));
+            var typeArguments = methodSymbol.IsGenericMethod
+                ? $"<{string.Join(", ", methodSymbol.TypeArguments.Select(o => o.Name))}>"
+                : null;
+            var outParameters = methodSymbol.Parameters.Where(o => o.RefKind == RefKind.Out).ToList();
+
+            if (outParameters.Count > 0)
+            {
+                // A lambda cannot capture an out parameter of the enclosing method (unlike ref, out parameters
+                // are guaranteed to be assigned by the callee, so no initial value needs to cross into the
+                // lambda). Each out value is produced by a fresh local declared inside the lambda, packaged
+                // together with the return value (if any) into an anonymous object, and unpacked into the real
+                // out parameters once ExecuteAction returns. Also, out parameters cannot appear on async
+                // methods at all, so ExecuteAction (not ExecuteActionAsync) is always the right call here.
+                var callArguments = string.Join(", ", methodSymbol.Parameters.Select(o =>
+                    o.RefKind == RefKind.Out ? $"out var __{o.Name}" : o.Name));
+                var callStatement = methodSymbol.ReturnsVoid
+                    ? $"{instancePath}.{methodSymbol.Name}{typeArguments}({callArguments});"
+                    : $"var __result = {instancePath}.{methodSymbol.Name}{typeArguments}({callArguments});";
+                var packagedFields = string.Join(", ",
+                    (methodSymbol.ReturnsVoid ? Enumerable.Empty<string>() : new[] { "__result" })
+                    .Concat(outParameters.Select(o => $"{o.Name} = __{o.Name}")));
+                var unpackAssignments = string.Join(" ", outParameters.Select(o => $"{o.Name} = __packed.{o.Name};"));
+                var returnStatement = methodSymbol.ReturnsVoid ? "" : "return __packed.__result;";
+
+                return $@"public {returnType} {methodSymbol.Name}{typeArguments}({parameters})
+        {{
+            var __packed = ExecuteAction(() =>
+            {{
+                {callStatement}
+                return new {{ {packagedFields} }};
+            }});
+            {unpackAssignments}
+            {returnStatement}
+        }}";
+            }
+
             var actionName = methodSymbol.Name.EndsWith("Async") && !methodSymbol.ReturnType.Name.StartsWith("IAsyncEnumerable") ? "return ExecuteActionAsync"
                 : !methodSymbol.ReturnsVoid ? "return ExecuteAction"
                 : "ExecuteAction";
             var arguments = string.Join(", ", methodSymbol.Parameters.Select(o => o.Name));
-            var typeArguments = methodSymbol.IsGenericMethod
-                ? $"<{string.Join(", ", methodSymbol.TypeArguments.Select(o => o.Name))}>"
-                : null;
 
             return $@"public {returnType} {methodSymbol.Name}{typeArguments}({parameters})
         {{

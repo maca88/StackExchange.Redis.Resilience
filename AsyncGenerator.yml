@@ -27,7 +27,7 @@
   concurrentRun: false
   applyChanges: true
   suppressDiagnosticFailures:
-  - pattern: ^.*(Hashing).*$
+  - pattern: ^.*doesn't support.*has not been tested.*$
   - pattern: ^.*(Newtonsoft.Json).*$
   analyzation:
     cancellationTokens:

@@ -26,6 +26,144 @@ namespace StackExchange.Redis.Resilience
 
 
         /// <inheritdoc />
+        public bool ArraySet(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex index, StackExchange.Redis.RedisValue value, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ArraySet(key, index, value, flags));
+        }
+
+        /// <inheritdoc />
+        public int ArraySet(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex index, StackExchange.Redis.RedisValue[] values, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ArraySet(key, index, values, flags));
+        }
+
+        /// <inheritdoc />
+        public int ArraySet(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayEntry[] values, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ArraySet(key, values, flags));
+        }
+
+        /// <inheritdoc />
+        public StackExchange.Redis.RedisValue ArrayGet(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex index, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ArrayGet(key, index, flags));
+        }
+
+        /// <inheritdoc />
+        public StackExchange.Redis.RedisValue[] ArrayGet(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex[] indices, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ArrayGet(key, indices, flags));
+        }
+
+        /// <inheritdoc />
+        public StackExchange.Redis.RedisValue[] ArrayGetRange(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex start, StackExchange.Redis.RedisArrayIndex end, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ArrayGetRange(key, start, end, flags));
+        }
+
+        /// <inheritdoc />
+        public StackExchange.Redis.RedisArrayIndex ArrayLength(StackExchange.Redis.RedisKey key, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ArrayLength(key, flags));
+        }
+
+        /// <inheritdoc />
+        public StackExchange.Redis.RedisArrayIndex ArrayCount(StackExchange.Redis.RedisKey key, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ArrayCount(key, flags));
+        }
+
+        /// <inheritdoc />
+        public bool ArrayDelete(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex index, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ArrayDelete(key, index, flags));
+        }
+
+        /// <inheritdoc />
+        public int ArrayDelete(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex[] indices, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ArrayDelete(key, indices, flags));
+        }
+
+        /// <inheritdoc />
+        public StackExchange.Redis.RedisArrayIndex ArrayDeleteRange(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex start, StackExchange.Redis.RedisArrayIndex end, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ArrayDeleteRange(key, start, end, flags));
+        }
+
+        /// <inheritdoc />
+        public StackExchange.Redis.RedisArrayIndex ArrayDeleteRange(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayRange[] ranges, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ArrayDeleteRange(key, ranges, flags));
+        }
+
+        /// <inheritdoc />
+        public StackExchange.Redis.RedisArrayEntry[] ArrayScan(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex start, StackExchange.Redis.RedisArrayIndex end, int limit = 0, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ArrayScan(key, start, end, limit, flags));
+        }
+
+        /// <inheritdoc />
+        public StackExchange.Redis.RedisArrayEntry[] ArrayGrep(StackExchange.Redis.RedisKey key, StackExchange.Redis.ArrayGrepRequest request, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ArrayGrep(key, request, flags));
+        }
+
+        /// <inheritdoc />
+        public StackExchange.Redis.RedisValue ArrayOperation(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex start, StackExchange.Redis.RedisArrayIndex end, StackExchange.Redis.ArrayOperation operation, StackExchange.Redis.RedisValue operand = default, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ArrayOperation(key, start, end, operation, operand, flags));
+        }
+
+        /// <inheritdoc />
+        public StackExchange.Redis.RedisArrayIndex ArrayRing(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex maxLength, StackExchange.Redis.RedisValue value, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ArrayRing(key, maxLength, value, flags));
+        }
+
+        /// <inheritdoc />
+        public StackExchange.Redis.RedisArrayIndex ArrayRing(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex maxLength, StackExchange.Redis.RedisValue[] values, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ArrayRing(key, maxLength, values, flags));
+        }
+
+        /// <inheritdoc />
+        public StackExchange.Redis.RedisArrayIndex? ArrayNext(StackExchange.Redis.RedisKey key, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ArrayNext(key, flags));
+        }
+
+        /// <inheritdoc />
+        public StackExchange.Redis.RedisArrayIndex ArrayInsert(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue value, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ArrayInsert(key, value, flags));
+        }
+
+        /// <inheritdoc />
+        public StackExchange.Redis.RedisArrayIndex ArrayInsert(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue[] values, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ArrayInsert(key, values, flags));
+        }
+
+        /// <inheritdoc />
+        public bool ArraySeek(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex index, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ArraySeek(key, index, flags));
+        }
+
+        /// <inheritdoc />
+        public StackExchange.Redis.RedisValue[] ArrayLastItems(StackExchange.Redis.RedisKey key, int count, bool reverse = false, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ArrayLastItems(key, count, reverse, flags));
+        }
+
+        /// <inheritdoc />
+        public StackExchange.Redis.ArrayInfo ArrayInfo(StackExchange.Redis.RedisKey key, bool full = false, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.ArrayInfo(key, full, flags));
+        }
+
+        /// <inheritdoc />
         public StackExchange.Redis.IBatch CreateBatch(object? asyncState = default)
         {
             return ExecuteAction(() => _instance!.Value.CreateBatch(asyncState));
@@ -998,6 +1136,12 @@ namespace StackExchange.Redis.Resilience
         }
 
         /// <inheritdoc />
+        public double? SortedSetIncrement(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue member, double value, StackExchange.Redis.ValueCondition when, StackExchange.Redis.CommandFlags flags)
+        {
+            return ExecuteAction(() => _instance!.Value.SortedSetIncrement(key, member, value, when, flags));
+        }
+
+        /// <inheritdoc />
         public long SortedSetIntersectionLength(StackExchange.Redis.RedisKey[] keys, long limit = 0, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
         {
             return ExecuteAction(() => _instance!.Value.SortedSetIntersectionLength(keys, limit, flags));
@@ -1190,6 +1334,18 @@ namespace StackExchange.Redis.Resilience
         }
 
         /// <inheritdoc />
+        public long StreamNegativeAcknowledge(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue groupName, StackExchange.Redis.StreamNackMode mode, StackExchange.Redis.RedisValue messageId, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.StreamNegativeAcknowledge(key, groupName, mode, messageId, flags));
+        }
+
+        /// <inheritdoc />
+        public long StreamNegativeAcknowledge(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue groupName, StackExchange.Redis.StreamNackMode mode, StackExchange.Redis.RedisValue[] messageIds, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.StreamNegativeAcknowledge(key, groupName, mode, messageIds, flags));
+        }
+
+        /// <inheritdoc />
         public StackExchange.Redis.RedisValue StreamAdd(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue streamField, StackExchange.Redis.RedisValue streamValue, StackExchange.Redis.RedisValue? messageId, int? maxLength, bool useApproximateMaxLength, StackExchange.Redis.CommandFlags flags)
         {
             return ExecuteAction(() => _instance!.Value.StreamAdd(key, streamField, streamValue, messageId, maxLength, useApproximateMaxLength, flags));
@@ -1208,9 +1364,27 @@ namespace StackExchange.Redis.Resilience
         }
 
         /// <inheritdoc />
+        public StackExchange.Redis.RedisValue StreamAdd(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue streamField, StackExchange.Redis.RedisValue streamValue, StackExchange.Redis.StreamIdempotentId idempotentId, long? maxLength = default, bool useApproximateMaxLength = false, long? limit = default, StackExchange.Redis.StreamTrimMode trimMode = StackExchange.Redis.StreamTrimMode.KeepReferences, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.StreamAdd(key, streamField, streamValue, idempotentId, maxLength, useApproximateMaxLength, limit, trimMode, flags));
+        }
+
+        /// <inheritdoc />
         public StackExchange.Redis.RedisValue StreamAdd(StackExchange.Redis.RedisKey key, StackExchange.Redis.NameValueEntry[] streamPairs, StackExchange.Redis.RedisValue? messageId = default, long? maxLength = default, bool useApproximateMaxLength = false, long? limit = default, StackExchange.Redis.StreamTrimMode trimMode = StackExchange.Redis.StreamTrimMode.KeepReferences, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
         {
             return ExecuteAction(() => _instance!.Value.StreamAdd(key, streamPairs, messageId, maxLength, useApproximateMaxLength, limit, trimMode, flags));
+        }
+
+        /// <inheritdoc />
+        public StackExchange.Redis.RedisValue StreamAdd(StackExchange.Redis.RedisKey key, StackExchange.Redis.NameValueEntry[] streamPairs, StackExchange.Redis.StreamIdempotentId idempotentId, long? maxLength = default, bool useApproximateMaxLength = false, long? limit = default, StackExchange.Redis.StreamTrimMode trimMode = StackExchange.Redis.StreamTrimMode.KeepReferences, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.StreamAdd(key, streamPairs, idempotentId, maxLength, useApproximateMaxLength, limit, trimMode, flags));
+        }
+
+        /// <inheritdoc />
+        public void StreamConfigure(StackExchange.Redis.RedisKey key, StackExchange.Redis.StreamConfiguration configuration, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            ExecuteAction(() => _instance!.Value.StreamConfigure(key, configuration, flags));
         }
 
         /// <inheritdoc />
@@ -1532,6 +1706,18 @@ namespace StackExchange.Redis.Resilience
         }
 
         /// <inheritdoc />
+        public StackExchange.Redis.StringIncrementResult<long> StringIncrement(StackExchange.Redis.RedisKey key, long value, StackExchange.Redis.Expiration expiry, long? lowerBound = default, long? upperBound = default, StackExchange.Redis.IncrementOptions options = StackExchange.Redis.IncrementOptions.None, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.StringIncrement(key, value, expiry, lowerBound, upperBound, options, flags));
+        }
+
+        /// <inheritdoc />
+        public StackExchange.Redis.StringIncrementResult<double> StringIncrement(StackExchange.Redis.RedisKey key, double value, StackExchange.Redis.Expiration expiry, double? lowerBound = default, double? upperBound = default, StackExchange.Redis.IncrementOptions options = StackExchange.Redis.IncrementOptions.None, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.StringIncrement(key, value, expiry, lowerBound, upperBound, options, flags));
+        }
+
+        /// <inheritdoc />
         public long StringLength(StackExchange.Redis.RedisKey key, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
         {
             return ExecuteAction(() => _instance!.Value.StringLength(key, flags));
@@ -1700,12 +1886,162 @@ namespace StackExchange.Redis.Resilience
         }
 
         /// <inheritdoc />
+        public StackExchange.Redis.Lease<StackExchange.Redis.RedisValue> VectorSetRange(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue start = default, StackExchange.Redis.RedisValue end = default, long count = -1, StackExchange.Redis.Exclude exclude = StackExchange.Redis.Exclude.None, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.VectorSetRange(key, start, end, count, exclude, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Collections.Generic.IEnumerable<StackExchange.Redis.RedisValue> VectorSetRangeEnumerate(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue start = default, StackExchange.Redis.RedisValue end = default, long count = 100, StackExchange.Redis.Exclude exclude = StackExchange.Redis.Exclude.None, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.VectorSetRangeEnumerate(key, start, end, count, exclude, flags));
+        }
+
+        /// <inheritdoc />
         public int Database => _instance!.Value.Database;
 
         /// <inheritdoc />
         public System.TimeSpan Ping(StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
         {
             return ExecuteAction(() => _instance!.Value.Ping(flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<bool> ArraySetAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex index, StackExchange.Redis.RedisValue value, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ArraySetAsync(key, index, value, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<int> ArraySetAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex index, StackExchange.Redis.RedisValue[] values, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ArraySetAsync(key, index, values, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<int> ArraySetAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayEntry[] values, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ArraySetAsync(key, values, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.RedisValue> ArrayGetAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex index, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ArrayGetAsync(key, index, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.RedisValue[]> ArrayGetAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex[] indices, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ArrayGetAsync(key, indices, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.RedisValue[]> ArrayGetRangeAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex start, StackExchange.Redis.RedisArrayIndex end, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ArrayGetRangeAsync(key, start, end, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.RedisArrayIndex> ArrayLengthAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ArrayLengthAsync(key, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.RedisArrayIndex> ArrayCountAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ArrayCountAsync(key, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<bool> ArrayDeleteAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex index, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ArrayDeleteAsync(key, index, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<int> ArrayDeleteAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex[] indices, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ArrayDeleteAsync(key, indices, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.RedisArrayIndex> ArrayDeleteRangeAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex start, StackExchange.Redis.RedisArrayIndex end, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ArrayDeleteRangeAsync(key, start, end, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.RedisArrayIndex> ArrayDeleteRangeAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayRange[] ranges, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ArrayDeleteRangeAsync(key, ranges, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.RedisArrayEntry[]> ArrayScanAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex start, StackExchange.Redis.RedisArrayIndex end, int limit = 0, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ArrayScanAsync(key, start, end, limit, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.RedisArrayEntry[]> ArrayGrepAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.ArrayGrepRequest request, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ArrayGrepAsync(key, request, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.RedisValue> ArrayOperationAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex start, StackExchange.Redis.RedisArrayIndex end, StackExchange.Redis.ArrayOperation operation, StackExchange.Redis.RedisValue operand = default, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ArrayOperationAsync(key, start, end, operation, operand, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.RedisArrayIndex> ArrayRingAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex maxLength, StackExchange.Redis.RedisValue value, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ArrayRingAsync(key, maxLength, value, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.RedisArrayIndex> ArrayRingAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex maxLength, StackExchange.Redis.RedisValue[] values, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ArrayRingAsync(key, maxLength, values, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.RedisArrayIndex?> ArrayNextAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ArrayNextAsync(key, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.RedisArrayIndex> ArrayInsertAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue value, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ArrayInsertAsync(key, value, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.RedisArrayIndex> ArrayInsertAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue[] values, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ArrayInsertAsync(key, values, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<bool> ArraySeekAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisArrayIndex index, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ArraySeekAsync(key, index, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.RedisValue[]> ArrayLastItemsAsync(StackExchange.Redis.RedisKey key, int count, bool reverse = false, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ArrayLastItemsAsync(key, count, reverse, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.ArrayInfo> ArrayInfoAsync(StackExchange.Redis.RedisKey key, bool full = false, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.ArrayInfoAsync(key, full, flags));
         }
 
         /// <inheritdoc />
@@ -2663,6 +2999,12 @@ namespace StackExchange.Redis.Resilience
         }
 
         /// <inheritdoc />
+        public System.Threading.Tasks.Task<double?> SortedSetIncrementAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue member, double value, StackExchange.Redis.ValueCondition when, StackExchange.Redis.CommandFlags flags)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.SortedSetIncrementAsync(key, member, value, when, flags));
+        }
+
+        /// <inheritdoc />
         public System.Threading.Tasks.Task<long> SortedSetIntersectionLengthAsync(StackExchange.Redis.RedisKey[] keys, long limit = 0, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
         {
             return ExecuteActionAsync(() => _instance!.Value.SortedSetIntersectionLengthAsync(keys, limit, flags));
@@ -2849,6 +3191,18 @@ namespace StackExchange.Redis.Resilience
         }
 
         /// <inheritdoc />
+        public System.Threading.Tasks.Task<long> StreamNegativeAcknowledgeAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue groupName, StackExchange.Redis.StreamNackMode mode, StackExchange.Redis.RedisValue messageId, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.StreamNegativeAcknowledgeAsync(key, groupName, mode, messageId, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<long> StreamNegativeAcknowledgeAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue groupName, StackExchange.Redis.StreamNackMode mode, StackExchange.Redis.RedisValue[] messageIds, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.StreamNegativeAcknowledgeAsync(key, groupName, mode, messageIds, flags));
+        }
+
+        /// <inheritdoc />
         public System.Threading.Tasks.Task<StackExchange.Redis.RedisValue> StreamAddAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue streamField, StackExchange.Redis.RedisValue streamValue, StackExchange.Redis.RedisValue? messageId, int? maxLength, bool useApproximateMaxLength, StackExchange.Redis.CommandFlags flags)
         {
             return ExecuteActionAsync(() => _instance!.Value.StreamAddAsync(key, streamField, streamValue, messageId, maxLength, useApproximateMaxLength, flags));
@@ -2870,6 +3224,24 @@ namespace StackExchange.Redis.Resilience
         public System.Threading.Tasks.Task<StackExchange.Redis.RedisValue> StreamAddAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.NameValueEntry[] streamPairs, StackExchange.Redis.RedisValue? messageId = default, long? maxLength = default, bool useApproximateMaxLength = false, long? limit = default, StackExchange.Redis.StreamTrimMode trimMode = StackExchange.Redis.StreamTrimMode.KeepReferences, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
         {
             return ExecuteActionAsync(() => _instance!.Value.StreamAddAsync(key, streamPairs, messageId, maxLength, useApproximateMaxLength, limit, trimMode, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.RedisValue> StreamAddAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue streamField, StackExchange.Redis.RedisValue streamValue, StackExchange.Redis.StreamIdempotentId idempotentId, long? maxLength = default, bool useApproximateMaxLength = false, long? limit = default, StackExchange.Redis.StreamTrimMode trimMode = StackExchange.Redis.StreamTrimMode.KeepReferences, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.StreamAddAsync(key, streamField, streamValue, idempotentId, maxLength, useApproximateMaxLength, limit, trimMode, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.RedisValue> StreamAddAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.NameValueEntry[] streamPairs, StackExchange.Redis.StreamIdempotentId idempotentId, long? maxLength = default, bool useApproximateMaxLength = false, long? limit = default, StackExchange.Redis.StreamTrimMode trimMode = StackExchange.Redis.StreamTrimMode.KeepReferences, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.StreamAddAsync(key, streamPairs, idempotentId, maxLength, useApproximateMaxLength, limit, trimMode, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task StreamConfigureAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.StreamConfiguration configuration, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.StreamConfigureAsync(key, configuration, flags));
         }
 
         /// <inheritdoc />
@@ -3185,6 +3557,18 @@ namespace StackExchange.Redis.Resilience
         }
 
         /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.StringIncrementResult<long>> StringIncrementAsync(StackExchange.Redis.RedisKey key, long value, StackExchange.Redis.Expiration expiry, long? lowerBound = default, long? upperBound = default, StackExchange.Redis.IncrementOptions options = StackExchange.Redis.IncrementOptions.None, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.StringIncrementAsync(key, value, expiry, lowerBound, upperBound, options, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.StringIncrementResult<double>> StringIncrementAsync(StackExchange.Redis.RedisKey key, double value, StackExchange.Redis.Expiration expiry, double? lowerBound = default, double? upperBound = default, StackExchange.Redis.IncrementOptions options = StackExchange.Redis.IncrementOptions.None, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.StringIncrementAsync(key, value, expiry, lowerBound, upperBound, options, flags));
+        }
+
+        /// <inheritdoc />
         public System.Threading.Tasks.Task<long> StringLengthAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
         {
             return ExecuteActionAsync(() => _instance!.Value.StringLengthAsync(key, flags));
@@ -3350,6 +3734,18 @@ namespace StackExchange.Redis.Resilience
         public System.Threading.Tasks.Task<StackExchange.Redis.Lease<StackExchange.Redis.VectorSetSimilaritySearchResult>?> VectorSetSimilaritySearchAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.VectorSetSimilaritySearchRequest query, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
         {
             return ExecuteActionAsync(() => _instance!.Value.VectorSetSimilaritySearchAsync(key, query, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.Lease<StackExchange.Redis.RedisValue>?> VectorSetRangeAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue start = default, StackExchange.Redis.RedisValue end = default, long count = -1, StackExchange.Redis.Exclude exclude = StackExchange.Redis.Exclude.None, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.VectorSetRangeAsync(key, start, end, count, exclude, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Collections.Generic.IAsyncEnumerable<StackExchange.Redis.RedisValue> VectorSetRangeEnumerateAsync(StackExchange.Redis.RedisKey key, StackExchange.Redis.RedisValue start = default, StackExchange.Redis.RedisValue end = default, long count = 100, StackExchange.Redis.Exclude exclude = StackExchange.Redis.Exclude.None, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.VectorSetRangeEnumerateAsync(key, start, end, count, exclude, flags));
         }
 
         /// <inheritdoc />

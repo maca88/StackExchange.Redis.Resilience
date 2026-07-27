@@ -26,6 +26,66 @@ namespace StackExchange.Redis.Resilience
 
 
         /// <inheritdoc />
+        public void HotKeysStart(StackExchange.Redis.HotKeysMetrics metrics = (StackExchange.Redis.HotKeysMetrics)(-1), long count = 0, System.TimeSpan duration = default, long sampleRatio = 1, int[]? slots = default, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            ExecuteAction(() => _instance!.Value.HotKeysStart(metrics, count, duration, sampleRatio, slots, flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task HotKeysStartAsync(StackExchange.Redis.HotKeysMetrics metrics = (StackExchange.Redis.HotKeysMetrics)(-1), long count = 0, System.TimeSpan duration = default, long sampleRatio = 1, int[]? slots = default, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.HotKeysStartAsync(metrics, count, duration, sampleRatio, slots, flags));
+        }
+
+        /// <inheritdoc />
+        public bool HotKeysStop(StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.HotKeysStop(flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<bool> HotKeysStopAsync(StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.HotKeysStopAsync(flags));
+        }
+
+        /// <inheritdoc />
+        public void HotKeysReset(StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            ExecuteAction(() => _instance!.Value.HotKeysReset(flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task HotKeysResetAsync(StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.HotKeysResetAsync(flags));
+        }
+
+        /// <inheritdoc />
+        public StackExchange.Redis.HotKeysResult? HotKeysGet(StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteAction(() => _instance!.Value.HotKeysGet(flags));
+        }
+
+        /// <inheritdoc />
+        public System.Threading.Tasks.Task<StackExchange.Redis.HotKeysResult?> HotKeysGetAsync(StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
+        {
+            return ExecuteActionAsync(() => _instance!.Value.HotKeysGetAsync(flags));
+        }
+
+        /// <inheritdoc />
+        public StackExchange.Redis.ProductVariant GetProductVariant(out string version)
+        {
+            var __packed = ExecuteAction(() =>
+            {
+                var __result = _instance!.Value.GetProductVariant(out var __version);
+                return new { __result, version = __version };
+            });
+            version = __packed.version;
+            return __packed.__result;
+        }
+
+        /// <inheritdoc />
         public void ClientKill(System.Net.EndPoint endpoint, StackExchange.Redis.CommandFlags flags = StackExchange.Redis.CommandFlags.None)
         {
             ExecuteAction(() => _instance!.Value.ClientKill(endpoint, flags));

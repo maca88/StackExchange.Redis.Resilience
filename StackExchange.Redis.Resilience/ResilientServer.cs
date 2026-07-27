@@ -1,4 +1,4 @@
-﻿namespace StackExchange.Redis.Resilience
+namespace StackExchange.Redis.Resilience
 {
     internal partial class ResilientServer : IServer
     {
