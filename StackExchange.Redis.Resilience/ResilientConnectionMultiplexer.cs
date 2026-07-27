@@ -19,6 +19,8 @@ namespace StackExchange.Redis.Resilience
     /// done after the batch was created.</para>
     /// <para>- Enumerating a collection from IDatabase.SetScan, IDatabase.HashScan and IDatabase.SortedSetScan methods
     /// may throw an <see cref="ObjectDisposedException"/> when a reconnect was done while iterating the collection.</para>
+    /// <para>Calls made directly on an <see cref="IDatabase"/>, <see cref="IServer"/> or <see cref="ISubscriber"/> are
+    /// rebound on reconnect, so those instances are safe to cache.</para>
     /// </summary>
     public partial class ResilientConnectionMultiplexer : IResilientConnectionMultiplexer
     {
@@ -306,8 +308,7 @@ namespace StackExchange.Redis.Resilience
                     return false;
                 }
 
-                SetupMultiplexer(newMultiplexer, _connectionMultiplexer);
-                Interlocked.Exchange(ref _lastReconnectTicks, utcNow.UtcTicks);
+                SetupMultiplexer(newMultiplexer, _connectionMultiplexer, utcNow.UtcTicks);
 
                 return true;
             }
@@ -358,9 +359,11 @@ namespace StackExchange.Redis.Resilience
             return false;
         }
 
-        private void SetupMultiplexer(IConnectionMultiplexer newMultiplexer, IConnectionMultiplexer oldMultiplexer)
+        private void SetupMultiplexer(IConnectionMultiplexer newMultiplexer, IConnectionMultiplexer oldMultiplexer, long reconnectTicks)
         {
             _connectionMultiplexer = newMultiplexer;
+            // Signal the reconnect as soon as the new multiplexer is set, so that already resolved instances can rebind to it
+            Interlocked.Exchange(ref _lastReconnectTicks, reconnectTicks);
             CloseMultiplexer(oldMultiplexer);
 
             // Copy properties that have a setter
@@ -594,6 +597,11 @@ namespace StackExchange.Redis.Resilience
 
                 action();
             }
+            catch (ObjectDisposedException)
+            {
+                // The reconnect already happened, retrying is enough for the action to rebind to the new multiplexer
+                action();
+            }
         }
 
         internal static T ExecuteAction<T>(IResilientConnectionMultiplexer resilientConnectionMultiplexer, Func<T> action)
@@ -610,6 +618,11 @@ namespace StackExchange.Redis.Resilience
                     throw;
                 }
 
+                return action();
+            }
+            catch (ObjectDisposedException)
+            {
+                // The reconnect already happened, retrying is enough for the action to rebind to the new multiplexer
                 return action();
             }
         }
@@ -630,6 +643,11 @@ namespace StackExchange.Redis.Resilience
 
                 await action().ConfigureAwait(false);
             }
+            catch (ObjectDisposedException)
+            {
+                // The reconnect already happened, retrying is enough for the action to rebind to the new multiplexer
+                await action().ConfigureAwait(false);
+            }
         }
 
         internal static async Task<T> ExecuteActionAsync<T>(IResilientConnectionMultiplexer resilientConnectionMultiplexer, Func<Task<T>> action)
@@ -646,6 +664,11 @@ namespace StackExchange.Redis.Resilience
                     throw;
                 }
 
+                return await action().ConfigureAwait(false);
+            }
+            catch (ObjectDisposedException)
+            {
+                // The reconnect already happened, retrying is enough for the action to rebind to the new multiplexer
                 return await action().ConfigureAwait(false);
             }
         }

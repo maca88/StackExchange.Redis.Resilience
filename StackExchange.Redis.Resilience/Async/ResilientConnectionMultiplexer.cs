@@ -92,8 +92,7 @@ namespace StackExchange.Redis.Resilience
                         return false;
                     }
 
-                    await (SetupMultiplexerAsync(newMultiplexer, _connectionMultiplexer, cancellationToken)).ConfigureAwait(false);
-                    Interlocked.Exchange(ref _lastReconnectTicks, utcNow.UtcTicks);
+                    await (SetupMultiplexerAsync(newMultiplexer, _connectionMultiplexer, utcNow.UtcTicks, cancellationToken)).ConfigureAwait(false);
 
                     return true;
                 }
@@ -104,10 +103,12 @@ namespace StackExchange.Redis.Resilience
             }
         }
 
-        private async Task SetupMultiplexerAsync(IConnectionMultiplexer newMultiplexer, IConnectionMultiplexer oldMultiplexer, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task SetupMultiplexerAsync(IConnectionMultiplexer newMultiplexer, IConnectionMultiplexer oldMultiplexer, long reconnectTicks, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             _connectionMultiplexer = newMultiplexer;
+            // Signal the reconnect as soon as the new multiplexer is set, so that already resolved instances can rebind to it
+            Interlocked.Exchange(ref _lastReconnectTicks, reconnectTicks);
             CloseMultiplexer(oldMultiplexer);
 
             // Copy properties that have a setter
