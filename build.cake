@@ -114,11 +114,9 @@ Task("pack")
 
     foreach(var project in projects)
     {
-        MSBuild(project, new MSBuildSettings {
+        DotNetPack(project, new DotNetPackSettings {
             Configuration = configuration,
-            ArgumentCustomization = args => args
-                .Append("/t:pack")
-                .Append("/p:PackageOutputPath=\"" + PACKAGE_DIR + "\"")
+            OutputDirectory = PACKAGE_DIR
         });
     }
 });
